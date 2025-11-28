@@ -3,7 +3,6 @@ import { Link, NavLink } from 'react-router-dom';
 import { ShoppingBag, Menu, X, Search, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/logo.png';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,8 +14,8 @@ const Navbar = () => {
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center">
-                        <img src={logo} alt="Arundhati Handlooms" className="h-16 w-auto" />
+                    <Link to="/" className="text-2xl font-serif font-bold text-[var(--color-primary)]">
+                        Arundhati Handlooms
                     </Link>
 
                     {/* Desktop Menu */}

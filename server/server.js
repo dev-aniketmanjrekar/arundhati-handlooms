@@ -428,29 +428,6 @@ app.post('/api/admin/update-bestsellers', isAdmin, async (req, res) => {
     }
 });
 
-// Get Dashboard Stats
-app.get('/api/admin/stats', isAdmin, async (req, res) => {
-    try {
-        const [orders] = await pool.query('SELECT COUNT(*) as count, SUM(total_amount) as revenue FROM orders');
-        const [users] = await pool.query('SELECT COUNT(*) as count FROM users WHERE role = "customer"');
-        const [inquiries] = await pool.query('SELECT COUNT(*) as count FROM inquiries WHERE status = "pending"');
-        const [recentActivity] = await pool.query(`
-            SELECT 'order' as type, id, created_at, total_amount as value FROM orders ORDER BY created_at DESC LIMIT 5
-        `);
-
-        res.json({
-            totalOrders: orders[0].count,
-            totalRevenue: orders[0].revenue || 0,
-            activeUsers: users[0].count,
-            pendingInquiries: inquiries[0].count,
-            recentActivity
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
