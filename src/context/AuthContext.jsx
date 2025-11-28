@@ -20,14 +20,24 @@ export const AuthProvider = ({ children }) => {
     }, [token, user]);
 
     const fetchProfile = async (authToken) => {
+        console.log('AuthContext: Fetching profile...');
+        console.log('AuthContext: Token present:', !!authToken);
+        console.log('AuthContext: API_URL:', API_URL);
+
         try {
             const response = await axios.get(`${API_URL}/auth/profile`, {
                 headers: { 'x-auth-token': authToken }
             });
+            console.log('AuthContext: Profile fetch success', response.data);
             setUser(response.data);
         } catch (error) {
-            console.error('Error fetching profile:', error);
+            console.error('AuthContext: Error fetching profile:', error);
+            if (error.response) {
+                console.error('AuthContext: Error status:', error.response.status);
+                console.error('AuthContext: Error data:', error.response.data);
+            }
             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                console.log('AuthContext: Logging out due to 401/403');
                 logout();
             }
         } finally {
