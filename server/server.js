@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 5000;
 const upload = multer({ dest: 'uploads/' });
 
 app.use(cors({
-    origin: ['https://arundhatihandlooms.com', 'http://localhost:5173', 'https://www.arundhatihandlooms.com'],
+    origin: true,
     credentials: true,
     allowedHeaders: ['Content-Type', 'x-auth-token']
 }));

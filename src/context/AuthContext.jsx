@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
             setUser(response.data);
         } catch (error) {
             console.error('Error fetching profile:', error);
-            logout();
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+            }
         } finally {
             setLoading(false);
         }
