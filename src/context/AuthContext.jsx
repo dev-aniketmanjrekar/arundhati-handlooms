@@ -12,12 +12,12 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token'));
 
     useEffect(() => {
-        if (token) {
+        if (token && !user) {
             fetchProfile(token);
         } else {
             setLoading(false);
         }
-    }, [token]);
+    }, [token, user]);
 
     const fetchProfile = async (authToken) => {
         try {
