@@ -25,7 +25,7 @@ const AdminProducts = () => {
     const fetchProducts = async () => {
         try {
             const authToken = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/admin/products`, {
+            const response = await fetch(`${API_URL}/products`, {
                 headers: { 'x-auth-token': authToken }
             });
             if (response.ok) {
