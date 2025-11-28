@@ -13,4 +13,17 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+// Test database connection on startup
+pool.getConnection()
+    .then(connection => {
+        console.log('✅ Database connected successfully to:', process.env.DB_HOST || 'localhost');
+        connection.release();
+    })
+    .catch(err => {
+        console.error('❌ Database connection failed:', err.message);
+        console.error('Host:', process.env.DB_HOST || 'localhost');
+        console.error('User:', process.env.DB_USER || 'root');
+        console.error('Database:', process.env.DB_NAME || 'u528065755_arundhati');
+    });
+
 export default pool;

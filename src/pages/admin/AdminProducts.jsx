@@ -24,17 +24,27 @@ const AdminProducts = () => {
 
     const fetchProducts = async () => {
         try {
+            console.log('AdminProducts: Fetching products from:', API_URL);
             const authToken = localStorage.getItem('token');
+            console.log('AdminProducts: Token present:', !!authToken);
+
             const response = await fetch(`${API_URL}/admin/products`, {
                 headers: { 'x-auth-token': authToken }
             });
+
+            console.log('AdminProducts: Response status:', response.status);
+
             if (response.ok) {
                 const data = await response.json();
+                console.log('AdminProducts: Products received:', data.length);
                 setProducts(data);
                 setProductNames([...new Set(data.map(p => p.name))]);
+            } else {
+                const error = await response.text();
+                console.error('AdminProducts: Fetch error:', error);
             }
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('AdminProducts: Error fetching products:', error);
         } finally {
             setLoading(false);
         }
