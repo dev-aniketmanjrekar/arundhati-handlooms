@@ -263,6 +263,45 @@ app.put('/api/admin/products/:id', isAdmin, async (req, res) => {
     }
 });
 
+// Admin: Get all users
+app.get('/api/admin/users', isAdmin, async (req, res) => {
+    try {
+        const [users] = await pool.query('SELECT id, name, email, phone, address, pincode, role, created_at FROM users ORDER BY created_at DESC');
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users for admin:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Admin: Create user
+app.post('/api/admin/users', isAdmin, async (req, res) => {
+    const { name, email, password, phone, address, pincode, role } = req.body;
+
+    try {
+        // Check if user exists
+        const [existingUsers] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        if (existingUsers.length > 0) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Insert user
+        const [result] = await pool.query(
+            'INSERT INTO users (name, email, password, phone, address, pincode, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [name, email, hashedPassword, phone, address, pincode, role || 'customer']
+        );
+
+        res.status(201).json({ message: 'User created successfully', id: result.insertId });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Delete Product
 app.delete('/api/admin/products/:id', isAdmin, async (req, res) => {
     try {
