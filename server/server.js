@@ -160,6 +160,18 @@ function generateSlug(name, color) {
 
 // --- Product Routes ---
 
+// Admin: Get all products (with admin authentication)
+app.get('/api/admin/products', isAdmin, async (req, res) => {
+    try {
+        const [products] = await pool.query('SELECT * FROM products ORDER BY created_at DESC');
+        res.json(products);
+    } catch (error) {
+        console.error('Error fetching products for admin:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Public: Get all products
 app.get('/api/products', async (req, res) => {
     try {
         const [products] = await pool.query('SELECT * FROM products');
