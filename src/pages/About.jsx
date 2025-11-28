@@ -1,9 +1,15 @@
 import React from 'react';
 import { Award, Users, Heart } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const About = () => {
     return (
         <div className="bg-white">
+            <SEO
+                title="About Arundhati Handlooms - Our Story"
+                description="Learn about Arundhati Handlooms' journey in preserving traditional handloom craftsmanship. Supporting 200+ artisan families since 1975."
+                keywords="handloom heritage, artisan sarees, traditional weaving, Indian textiles, handloom story"
+            />
             {/* Hero */}
             <div className="relative h-[60vh] bg-gray-900 overflow-hidden">
                 <img

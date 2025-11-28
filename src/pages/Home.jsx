@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Truck, Heart, Star, Instagram, Award, Clock } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import SEO from '../components/SEO';
 import axios from 'axios';
 import API_URL from '../config';
 
@@ -11,6 +12,25 @@ import heroMobile from '../assets/hero-mobile.png';
 const Home = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // Organization Schema
+    const organizationSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Arundhati Handlooms",
+        "description": "Premium handloom sarees and traditional wear",
+        "url": "https://arundhati-handlooms.onrender.com",
+        "logo": "https://arundhati-handlooms.onrender.com/logo.png",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+91-702-151-2319",
+            "contactType": "Customer Service",
+            "availableLanguage": ["en", "hi"]
+        },
+        "sameAs": [
+            "https://www.instagram.com/arundhatihandlooms"
+        ]
+    };
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -34,6 +54,12 @@ const Home = () => {
 
     return (
         <div>
+            <SEO
+                title="Arundhati Handlooms - Premium Handloom Sarees & Traditional Wear"
+                description="Discover exquisite handloom sarees and traditional wear at Arundhati Handlooms. Authentic craftsmanship, premium fabrics, and timeless designs for every occasion."
+                keywords="handloom sarees, traditional sarees, Indian sarees, handwoven sarees, silk sarees, cotton sarees, ethnic wear, Arundhati Handlooms"
+                schema={organizationSchema}
+            />
             {/* Hero Section */}
             <div className="relative h-[85vh] bg-gray-900 overflow-hidden">
                 <picture>

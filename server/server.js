@@ -333,6 +333,54 @@ app.post('/api/admin/users', isAdmin, async (req, res) => {
     }
 });
 
+// Admin: Update user
+app.put('/api/admin/users/:id', isAdmin, async (req, res) => {
+    const { name, email, phone, address, pincode, role } = req.body;
+
+    try {
+        await pool.query(
+            'UPDATE users SET name = ?, email = ?, phone = ?, address = ?, pincode = ?, role = ? WHERE id = ?',
+            [name, email, phone || null, address || null, pincode || null, role, req.params.id]
+        );
+
+        res.json({ message: 'User updated successfully' });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Admin: Delete user
+app.delete('/api/admin/users/:id', isAdmin, async (req, res) => {
+    try {
+        await pool.query('DELETE FROM users WHERE id = ?', [req.params.id]);
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// User: Update own profile (cannot change role)
+app.put('/api/auth/profile', auth, async (req, res) => {
+    const { name, email, phone, address, pincode } = req.body;
+
+    try {
+        await pool.query(
+            'UPDATE users SET name = ?, email = ?, phone = ?, address = ?, pincode = ? WHERE id = ?',
+            [name, email, phone || null, address || null, pincode || null, req.user.id]
+        );
+
+        // Fetch updated user
+        const [users] = await pool.query('SELECT id, name, email, phone, address, pincode, role FROM users WHERE id = ?', [req.user.id]);
+
+        res.json({ message: 'Profile updated successfully', user: users[0] });
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Delete Product
 app.delete('/api/admin/products/:id', isAdmin, async (req, res) => {
     try {
@@ -368,6 +416,81 @@ app.put('/api/admin/orders/:id/status', isAdmin, async (req, res) => {
         res.json({ message: 'Order status updated' });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Stock Notification Routes
+// Request stock notification
+app.post('/api/stock-notifications', async (req, res) => {
+    const { product_id, email, phone, name } = req.body;
+    const token = req.header('x-auth-token');
+
+    try {
+        let user_id = null;
+
+        // Get user_id if logged in
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                user_id = decoded.id;
+            } catch (err) {
+                // Token invalid or expired, continue without user_id
+            }
+        }
+
+        // Insert notification request
+        await pool.query(
+            'INSERT INTO stock_notifications (product_id, user_id, email, phone, name) VALUES (?, ?, ?, ?, ?)',
+            [product_id, user_id, email, phone, name]
+        );
+
+        // Send WhatsApp message to admin
+        const [product] = await pool.query('SELECT name, sku FROM products WHERE id = ?', [product_id]);
+        if (product.length > 0) {
+            const phoneNumber = "917021512319";
+            const message = `🔔 Stock Notification Request\n\nProduct: ${product[0].name}\nSKU: ${product[0].sku}\n\nCustomer:\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\n\nPlease notify when back in stock.`;
+            const encodedMessage = encodeURIComponent(message);
+
+            // Log WhatsApp URL (in production, you might use an API to send this automatically)
+            console.log(`WhatsApp URL: https://wa.me/${phoneNumber}?text=${encodedMessage}`);
+        }
+
+        res.status(201).json({ message: 'Notification request saved successfully' });
+    } catch (error) {
+        console.error('Error saving stock notification:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Admin: Get all stock notifications
+app.get('/api/admin/stock-notifications', isAdmin, async (req, res) => {
+    try {
+        const [notifications] = await pool.query(`
+            SELECT sn.*, p.name as product_name, p.sku, p.image_url,
+                   u.name as user_name, u.email as user_email
+            FROM stock_notifications sn
+            JOIN products p ON sn.product_id = p.id
+            LEFT JOIN users u ON sn.user_id = u.id
+            ORDER BY sn.created_at DESC
+        `);
+        res.json(notifications);
+    } catch (error) {
+        console.error('Error fetching stock notifications:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Admin: Mark notification as notified
+app.put('/api/admin/stock-notifications/:id/notify', isAdmin, async (req, res) => {
+    try {
+        await pool.query(
+            'UPDATE stock_notifications SET status = ?, notified_at = NOW() WHERE id = ?',
+            ['notified', req.params.id]
+        );
+        res.json({ message: 'Notification marked as sent' });
+    } catch (error) {
+        console.error('Error updating notification:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });

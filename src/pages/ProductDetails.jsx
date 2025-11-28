@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Minus, Plus, ShoppingBag, ArrowLeft, Truck, MapPin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import SEO from '../components/SEO';
 import axios from 'axios';
 import API_URL from '../config';
 
@@ -19,6 +20,9 @@ const ProductDetails = () => {
     const [pincode, setPincode] = useState('');
     const [deliveryDate, setDeliveryDate] = useState(null);
     const [checkingPincode, setCheckingPincode] = useState(false);
+    const [showNotifyForm, setShowNotifyForm] = useState(false);
+    const [notifyForm, setNotifyForm] = useState({ name: '', email: '', phone: '' });
+    const [submittingNotify, setSubmittingNotify] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -82,6 +86,34 @@ const ProductDetails = () => {
         addToCart(product, 1);
     };
 
+    const handleNotifyMe = async (e) => {
+        e.preventDefault();
+        setSubmittingNotify(true);
+
+        try {
+            const authToken = localStorage.getItem('token');
+            const response = await axios.post(`${API_URL}/stock-notifications`, {
+                product_id: product.id,
+                name: notifyForm.name || user?.name || '',
+                email: notifyForm.email || user?.email || '',
+                phone: notifyForm.phone || user?.phone || ''
+            }, {
+                headers: authToken ? { 'x-auth-token': authToken } : {}
+            });
+
+            if (response.status === 201) {
+                alert('Thank you! We will notify you when this product is back in stock.');
+                setShowNotifyForm(false);
+                setNotifyForm({ name: '', email: '', phone: '' });
+            }
+        } catch (error) {
+            console.error('Error submitting notification request:', error);
+            alert('Failed to submit request. Please try again.');
+        } finally {
+            setSubmittingNotify(false);
+        }
+    };
+
     if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     if (error || !product) {
         return (
@@ -92,8 +124,41 @@ const ProductDetails = () => {
         );
     }
 
+    // Product Schema
+    const productSchema = product ? {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "image": product.image_url,
+        "description": product.description,
+        "sku": product.sku,
+        "brand": {
+            "@type": "Brand",
+            "name": "Arundhati Handlooms"
+        },
+        "offers": {
+            "@type": "Offer",
+            "url": window.location.href,
+            "priceCurrency": "INR",
+            "price": product.discount_percent ? (product.price * (1 - product.discount_percent / 100)) : product.price,
+            "availability": "https://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition"
+        },
+        "category": product.category,
+        "material": product.fabric_type
+    } : null;
+
     return (
         <div className="py-12 bg-white">
+            {product && (
+                <SEO
+                    title={`${product.name} - Arundhati Handlooms`}
+                    description={`${product.description || `Buy ${product.name} at Arundhati Handlooms`}. Premium ${product.fabric_type || 'handloom'} ${product.category}. Available in ${product.color}.`}
+                    keywords={`${product.name}, ${product.category}, ${product.fabric_type}, handloom saree, ${product.color} saree`}
+                    ogImage={product.image_url}
+                    schema={productSchema}
+                />
+            )}
             <div className="container mx-auto px-4">
                 <button
                     onClick={() => navigate(-1)}
@@ -240,45 +305,117 @@ const ProductDetails = () => {
                             )}
                         </div>
 
-                        {/* Add to Cart / Quantity / Buy Now */}
+                        {/* Add to Cart / Quantity / Buy Now OR Notify Me */}
                         <div className="flex flex-col gap-4">
-                            <div className="flex gap-4">
-                                {quantity > 0 ? (
-                                    <div className="flex items-center border border-gray-300 rounded-full w-full max-w-[200px]">
+                            {product.stock_quantity > 0 ? (
+                                <>
+                                    <div className="flex gap-4">
+                                        {quantity > 0 ? (
+                                            <div className="flex items-center border border-gray-300 rounded-full w-full max-w-[200px]">
+                                                <button
+                                                    onClick={() => updateQuantity(product.id, quantity - 1)}
+                                                    className="p-4 hover:bg-gray-50 text-gray-600 rounded-l-full"
+                                                >
+                                                    <Minus size={20} />
+                                                </button>
+                                                <span className="flex-1 text-center font-medium text-lg">{quantity}</span>
+                                                <button
+                                                    onClick={() => updateQuantity(product.id, quantity + 1)}
+                                                    className="p-4 hover:bg-gray-50 text-gray-600 rounded-r-full"
+                                                >
+                                                    <Plus size={20} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={handleAddToCart}
+                                                className="flex-1 bg-white border-2 border-[var(--color-primary)] text-[var(--color-primary)] py-4 rounded-full font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <ShoppingBag size={20} />
+                                                Add to Cart
+                                            </button>
+                                        )}
+
                                         <button
-                                            onClick={() => updateQuantity(product.id, quantity - 1)}
-                                            className="p-4 hover:bg-gray-50 text-gray-600 rounded-l-full"
+                                            onClick={() => {
+                                                if (quantity === 0) addToCart(product, 1);
+                                                navigate('/cart');
+                                            }}
+                                            className="flex-1 bg-[var(--color-primary)] text-white py-4 rounded-full font-medium hover:bg-[var(--color-accent)] transition-colors shadow-md"
                                         >
-                                            <Minus size={20} />
-                                        </button>
-                                        <span className="flex-1 text-center font-medium text-lg">{quantity}</span>
-                                        <button
-                                            onClick={() => updateQuantity(product.id, quantity + 1)}
-                                            className="p-4 hover:bg-gray-50 text-gray-600 rounded-r-full"
-                                        >
-                                            <Plus size={20} />
+                                            Buy Now
                                         </button>
                                     </div>
-                                ) : (
-                                    <button
-                                        onClick={handleAddToCart}
-                                        className="flex-1 bg-white border-2 border-[var(--color-primary)] text-[var(--color-primary)] py-4 rounded-full font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                                    >
-                                        <ShoppingBag size={20} />
-                                        Add to Cart
-                                    </button>
-                                )}
+                                </>
+                            ) : (
+                                <>
+                                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                                        <p className="text-red-600 font-medium mb-2">Out of Stock</p>
+                                        <p className="text-sm text-gray-600">This product is currently unavailable</p>
+                                    </div>
 
-                                <button
-                                    onClick={() => {
-                                        if (quantity === 0) addToCart(product, 1);
-                                        navigate('/cart');
-                                    }}
-                                    className="flex-1 bg-[var(--color-primary)] text-white py-4 rounded-full font-medium hover:bg-[var(--color-accent)] transition-colors shadow-md"
-                                >
-                                    Buy Now
-                                </button>
-                            </div>
+                                    {!showNotifyForm ? (
+                                        <button
+                                            onClick={() => {
+                                                setShowNotifyForm(true);
+                                                if (user) {
+                                                    setNotifyForm({
+                                                        name: user.name || '',
+                                                        email: user.email || '',
+                                                        phone: user.phone || ''
+                                                    });
+                                                }
+                                            }}
+                                            className="w-full bg-gray-800 text-white py-4 rounded-full font-medium hover:bg-gray-900 transition-colors"
+                                        >
+                                            Notify Me When Available
+                                        </button>
+                                    ) : (
+                                        <form onSubmit={handleNotifyMe} className="space-y-3 bg-gray-50 p-4 rounded-lg">
+                                            <p className="text-sm font-medium text-gray-700 mb-3">Get notified when back in stock:</p>
+                                            <input
+                                                type="text"
+                                                placeholder="Your Name"
+                                                value={notifyForm.name}
+                                                onChange={(e) => setNotifyForm({ ...notifyForm, name: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-md"
+                                                required
+                                            />
+                                            <input
+                                                type="email"
+                                                placeholder="Your Email"
+                                                value={notifyForm.email}
+                                                onChange={(e) => setNotifyForm({ ...notifyForm, email: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-md"
+                                                required
+                                            />
+                                            <input
+                                                type="tel"
+                                                placeholder="Your Phone (Optional)"
+                                                value={notifyForm.phone}
+                                                onChange={(e) => setNotifyForm({ ...notifyForm, phone: e.target.value })}
+                                                className="w-full px-4 py-2 border rounded-md"
+                                            />
+                                            <div className="flex gap-2">
+                                                <button
+                                                    type="submit"
+                                                    disabled={submittingNotify}
+                                                    className="flex-1 bg-[var(--color-primary)] text-white py-2 rounded-md hover:bg-[var(--color-accent)] disabled:opacity-50"
+                                                >
+                                                    {submittingNotify ? 'Submitting...' : 'Submit'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowNotifyForm(false)}
+                                                    className="px-4 py-2 border rounded-md hover:bg-gray-100"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    )}
+                                </>
+                            )}
                         </div>
 
                         <div className="mt-8 space-y-4 text-sm text-gray-500">

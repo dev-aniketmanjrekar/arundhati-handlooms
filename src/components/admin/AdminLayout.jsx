@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, ShoppingBag, Users, MessageSquare, LogOut, Package } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Users, MessageSquare, LogOut, Package, Bell } from 'lucide-react';
 
 const AdminLayout = ({ children }) => {
     const { logout } = useAuth();
@@ -19,6 +19,7 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/orders', icon: Package, label: 'Orders' },
         { path: '/admin/users', icon: Users, label: 'Users' },
         { path: '/admin/inquiries', icon: MessageSquare, label: 'Inquiries' },
+        { path: '/admin/stock-notifications', icon: Bell, label: 'Stock Alerts' },
     ];
 
     return (

@@ -24,6 +24,7 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminInquiries from './pages/admin/AdminInquiries';
+import AdminStockNotifications from './pages/admin/AdminStockNotifications';
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -60,6 +61,7 @@ function App() {
             <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
             <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
             <Route path="/admin/inquiries" element={<AdminRoute><AdminInquiries /></AdminRoute>} />
+            <Route path="/admin/stock-notifications" element={<AdminRoute><AdminStockNotifications /></AdminRoute>} />
 
             {/* Customer Routes - With Navbar/Footer */}
             <Route path="/" element={<CustomerLayout><Home /></CustomerLayout>} />

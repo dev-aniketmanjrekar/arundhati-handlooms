@@ -109,13 +109,17 @@ const Cart = () => {
                         {cart.map(item => (
                             <div key={item.id} className="bg-white p-4 rounded-lg shadow-sm flex gap-4 items-center">
                                 <div className="w-24 h-32 flex-shrink-0 overflow-hidden rounded-md bg-gray-100">
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                    <img src={item.image_url || item.image} alt={item.name} className="w-full h-full object-cover" />
                                 </div>
 
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
-                                            <h3 className="font-serif font-medium text-lg text-gray-900">{item.name}</h3>
+                                            <Link to={`/product/${item.slug}`}>
+                                                <h3 className="font-serif font-medium text-lg text-gray-900 hover:text-[var(--color-primary)] transition-colors">
+                                                    {item.name}
+                                                </h3>
+                                            </Link>
                                             <p className="text-sm text-gray-500">{item.category} • {item.color}</p>
                                         </div>
                                         <button

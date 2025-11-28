@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Filter } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import FilterSidebar from '../components/FilterSidebar';
+import SEO from '../components/SEO';
 import API_URL from '../config';
 import axios from 'axios';
 
@@ -68,6 +69,11 @@ const Shop = () => {
 
     return (
         <div className="bg-[var(--color-bg)] min-h-screen py-12">
+            <SEO
+                title="Shop Handloom Sarees -Arundhati Handlooms"
+                description="Browse our exquisite collection of handloom sarees. Filter by category, price, and size to find your perfect traditional wear."
+                keywords="buy handloom sarees online, traditional sarees shop, silk sarees, cotton sarees, wedding sarees"
+            />
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
