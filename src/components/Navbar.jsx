@@ -4,6 +4,8 @@ import { ShoppingBag, Menu, X, Search, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
+import logo from '../assets/logo.png';
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { getCartCount } = useCart();
@@ -13,9 +15,6 @@ const Navbar = () => {
         <nav className="bg-white shadow-sm sticky top-0 z-50">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center h-20">
-                    import logo from '../assets/logo.png';
-
-                    // ... inside component ...
                     {/* Logo */}
                     <Link to="/" className="flex items-center">
                         <img src={logo} alt="Arundhati Handlooms" className="h-16 w-auto" />

@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { LayoutDashboard, ShoppingBag, Users, MessageSquare, LogOut, Package } from 'lucide-react';
 
+import logo from '../../assets/logo.png';
+
 const AdminLayout = ({ children }) => {
     const { logout } = useAuth();
     const location = useLocation();
@@ -24,9 +26,6 @@ const AdminLayout = ({ children }) => {
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
-            import logo from '../../assets/logo.png';
-
-            // ... inside component ...
             <aside className="w-64 bg-white shadow-md flex flex-col">
                 <div className="p-6 border-b flex justify-center">
                     <img src={logo} alt="Arundhati Admin" className="h-12 w-auto" />
