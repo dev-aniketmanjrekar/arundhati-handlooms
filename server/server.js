@@ -428,60 +428,22 @@ app.post('/api/admin/update-bestsellers', isAdmin, async (req, res) => {
     }
 });
 
-// --- User Routes ---
-
-// Get all users
-app.get('/api/admin/users', isAdmin, async (req, res) => {
-    try {
-        const [users] = await pool.query('SELECT id, name, email, phone, address, pincode, role, created_at FROM users ORDER BY created_at DESC');
-        res.json(users);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// Create User (Admin)
-app.post('/api/admin/users', isAdmin, async (req, res) => {
-    const { name, email, password, phone, address, pincode, role } = req.body;
-
-    try {
-        // Check if user exists
-        const [existingUsers] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (existingUsers.length > 0) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // Insert user
-        const [result] = await pool.query(
-            'INSERT INTO users (name, email, password, phone, address, pincode, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, email, hashedPassword, phone, address, pincode, role || 'customer']
-        );
-
-        res.status(201).json({ message: 'User created successfully', userId: result.insertId });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
 // Get Dashboard Stats
 app.get('/api/admin/stats', isAdmin, async (req, res) => {
     try {
-        const [orderCount] = await pool.query('SELECT COUNT(*) as count FROM orders');
-        const [revenue] = await pool.query('SELECT SUM(total_amount) as total FROM orders');
-        const [userCount] = await pool.query('SELECT COUNT(*) as count FROM users WHERE role = "customer"');
-        const [inquiryCount] = await pool.query('SELECT COUNT(*) as count FROM inquiries');
+        const [orders] = await pool.query('SELECT COUNT(*) as count, SUM(total_amount) as revenue FROM orders');
+        const [users] = await pool.query('SELECT COUNT(*) as count FROM users WHERE role = "customer"');
+        const [inquiries] = await pool.query('SELECT COUNT(*) as count FROM inquiries WHERE status = "pending"');
+        const [recentActivity] = await pool.query(`
+            SELECT 'order' as type, id, created_at, total_amount as value FROM orders ORDER BY created_at DESC LIMIT 5
+        `);
 
         res.json({
-            totalOrders: orderCount[0].count,
-            totalRevenue: revenue[0].total || 0,
-            activeUsers: userCount[0].count,
-            pendingInquiries: inquiryCount[0].count
+            totalOrders: orders[0].count,
+            totalRevenue: orders[0].revenue || 0,
+            activeUsers: users[0].count,
+            pendingInquiries: inquiries[0].count,
+            recentActivity
         });
     } catch (error) {
         console.error(error);
