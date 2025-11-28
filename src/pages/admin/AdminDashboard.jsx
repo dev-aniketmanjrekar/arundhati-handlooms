@@ -39,19 +39,19 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-gray-500 text-sm font-medium">Total Orders</h3>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : stats.totalOrders}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : (stats?.totalOrders || 0)}</p>
                 </div>
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-gray-500 text-sm font-medium">Total Revenue</h3>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : `₹${stats.totalRevenue.toLocaleString()}`}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : `₹${(stats?.totalRevenue || 0).toLocaleString()}`}</p>
                 </div>
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-gray-500 text-sm font-medium">Active Users</h3>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : stats.activeUsers}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : (stats?.activeUsers || 0)}</p>
                 </div>
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <h3 className="text-gray-500 text-sm font-medium">Total Inquiries</h3>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : stats.pendingInquiries}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{loading ? '...' : (stats?.pendingInquiries || 0)}</p>
                 </div>
             </div>
 
