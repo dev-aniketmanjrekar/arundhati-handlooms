@@ -158,6 +158,37 @@ function generateSlug(name, color) {
     return slug;
 }
 
+// Admin: Get dashboard statistics
+app.get('/api/admin/dashboard-stats', isAdmin, async (req, res) => {
+    try {
+        // Get total orders
+        const [orderCount] = await pool.query('SELECT COUNT(*) as count FROM orders');
+
+        // Get total revenue
+        const [revenue] = await pool.query('SELECT SUM(total_amount) as total FROM orders');
+
+        // Get total users
+        const [userCount] = await pool.query('SELECT COUNT(*) as count FROM users');
+
+        // Get total products
+        const [productCount] = await pool.query('SELECT COUNT(*) as count FROM products');
+
+        // Get total inquiries
+        const [inquiryCount] = await pool.query('SELECT COUNT(*) as count FROM inquiries');
+
+        res.json({
+            totalOrders: orderCount[0].count || 0,
+            totalRevenue: revenue[0].total || 0,
+            totalUsers: userCount[0].count || 0,
+            totalProducts: productCount[0].count || 0,
+            totalInquiries: inquiryCount[0].count || 0
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // --- Product Routes ---
 
 // Admin: Get all products (with admin authentication)
