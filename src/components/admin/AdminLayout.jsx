@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { LayoutDashboard, ShoppingBag, Users, MessageSquare, LogOut, Package } from 'lucide-react';
-
 import logo from '../../assets/logo.png';
 
 const AdminLayout = ({ children }) => {
