@@ -5,6 +5,9 @@ import ProductCard from '../components/ProductCard';
 import axios from 'axios';
 import API_URL from '../config';
 
+import heroDesktop from '../assets/hero-desktop.png';
+import heroMobile from '../assets/hero-mobile.png';
+
 const Home = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -33,11 +36,14 @@ const Home = () => {
         <div>
             {/* Hero Section */}
             <div className="relative h-[85vh] bg-gray-900 overflow-hidden">
-                <img
-                    src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=2000&auto=format&fit=crop"
-                    alt="Handloom Saree Weaving"
-                    className="w-full h-full object-cover opacity-50 scale-105 animate-slow-zoom"
-                />
+                <picture>
+                    <source media="(min-width: 768px)" srcSet={heroDesktop} />
+                    <img
+                        src={heroMobile}
+                        alt="Handloom Saree Weaving"
+                        className="w-full h-full object-cover opacity-50 scale-105 animate-slow-zoom"
+                    />
+                </picture>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-center justify-center text-center px-4">
                     <div className="max-w-4xl">
                         <span className="text-[var(--color-secondary)] tracking-[0.2em] uppercase text-sm font-medium mb-4 block animate-fade-in-up">Authentic Handloom</span>
