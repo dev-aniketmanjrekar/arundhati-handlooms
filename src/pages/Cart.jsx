@@ -8,7 +8,7 @@ import API_URL from '../config';
 
 const Cart = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const navigate = useNavigate();
     const [isOrdering, setIsOrdering] = useState(false);
 
@@ -75,6 +75,15 @@ const Cart = () => {
             setIsOrdering(false);
         }
     };
+
+    // Show loading while Auth is being checked
+    if (loading) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center bg-[var(--color-bg)]">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        );
+    }
 
     if (cart.length === 0) {
         return (
