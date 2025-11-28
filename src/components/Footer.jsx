@@ -7,10 +7,13 @@ const Footer = () => {
         <footer className="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                    import logo from '../assets/logo.png';
+
+                    // ... inside component ...
                     {/* Brand Info */}
                     <div>
-                        <Link to="/" className="text-2xl font-serif font-bold text-[var(--color-secondary)] mb-6 block">
-                            Arundhati Handlooms
+                        <Link to="/" className="mb-6 block">
+                            <img src={logo} alt="Arundhati Handlooms" className="h-12 w-auto brightness-0 invert" />
                         </Link>
                         <p className="text-gray-200 mb-6 leading-relaxed">
                             Celebrating the timeless elegance of Indian handlooms. We bring you authentic, handcrafted sarees and blouses directly from master weavers.

@@ -13,9 +13,12 @@ const Navbar = () => {
         <nav className="bg-white shadow-sm sticky top-0 z-50">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center h-20">
+                    import logo from '../assets/logo.png';
+
+                    // ... inside component ...
                     {/* Logo */}
-                    <Link to="/" className="text-2xl font-serif font-bold text-[var(--color-primary)]">
-                        Arundhati Handlooms
+                    <Link to="/" className="flex items-center">
+                        <img src={logo} alt="Arundhati Handlooms" className="h-16 w-auto" />
                     </Link>
 
                     {/* Desktop Menu */}

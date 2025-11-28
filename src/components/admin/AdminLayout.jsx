@@ -24,9 +24,12 @@ const AdminLayout = ({ children }) => {
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
+            import logo from '../../assets/logo.png';
+
+            // ... inside component ...
             <aside className="w-64 bg-white shadow-md flex flex-col">
-                <div className="p-6 border-b">
-                    <h1 className="text-2xl font-serif font-bold text-red-800">Arundhati Admin</h1>
+                <div className="p-6 border-b flex justify-center">
+                    <img src={logo} alt="Arundhati Admin" className="h-12 w-auto" />
                 </div>
                 <nav className="flex-1 p-4 space-y-2">
                     {navItems.map((item) => {
@@ -37,8 +40,8 @@ const AdminLayout = ({ children }) => {
                                 key={item.path}
                                 to={item.path}
                                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-red-50 text-red-800'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    ? 'bg-red-50 text-red-800'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 <Icon size={20} />
