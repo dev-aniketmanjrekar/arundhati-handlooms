@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchProfile = async (authToken) => {
         try {
-            const response = await axios.get(`${API_URL}/auth/user`, {
+            const response = await axios.get(`${API_URL}/auth/profile`, {
                 headers: { 'x-auth-token': authToken }
             });
             setUser(response.data);
