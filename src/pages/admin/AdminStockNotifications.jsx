@@ -117,62 +117,45 @@ const AdminStockNotifications = () => {
                                                 className="w-12 h-16 object-cover rounded"
                                             />
                                             <div>
-                                                <div className="font-medium text-gray-900">{notification.product_name}</div>
-                                                <div className="text-xs text-gray-500">SKU: {notification.sku}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${notification.stock_quantity === 0
-                                                ? 'bg-red-100 text-red-800'
-                                                : 'bg-yellow-100 text-yellow-800'
-                                            }`}>
-                                            {notification.stock_quantity || 0}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm font-medium text-gray-900">{notification.name}</div>
-                                        {notification.user_name && (
-                                            <div className="text-xs text-gray-500">User: {notification.user_name}</div>
                                         )}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm text-gray-600">{notification.email}</div>
-                                        {notification.phone && (
-                                            <div className="text-xs text-gray-500">{notification.phone}</div>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        {new Date(notification.created_at).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {notification.status === 'pending' ? (
-                                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                Pending
-                                            </span>
-                                        ) : (
-                                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Notified
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {notification.status === 'pending' && (
-                                            <button
-                                                onClick={() => markAsNotified(notification.id)}
-                                                className="flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium"
-                                            >
-                                                <CheckCircle size={16} />
-                                                Mark Notified
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-600">{notification.email}</div>
+                                                {notification.phone && (
+                                                    <div className="text-xs text-gray-500">{notification.phone}</div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-600">
+                                                {new Date(notification.created_at).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {notification.status === 'pending' ? (
+                                                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        Pending
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        Notified
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {notification.status === 'pending' && (
+                                                    <button
+                                                        onClick={() => markAsNotified(notification.id)}
+                                                        className="flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium"
+                                                    >
+                                                        <CheckCircle size={16} />
+                                                        Mark Notified
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
                             ))}
-                        </tbody>
-                    </table>
+                                    </tbody>
+                                </table>
                 </div>
-            </div>
+                </div>
         </AdminLayout>
     );
 };

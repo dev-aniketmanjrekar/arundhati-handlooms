@@ -137,8 +137,11 @@ const AdminUsers = () => {
                 >
                     <Plus size={20} />
                     <span>Add User</span>
+                                >
+                    {editingUser ? 'Update User' : 'Create User'}
                 </button>
             </div>
+<<<<<<< HEAD
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -314,6 +317,14 @@ const AdminUsers = () => {
                 </div>
             )}
         </AdminLayout>
+=======
+        </form>
+                </div >
+                </div >
+    )
+}
+        </AdminLayout >
+>>>>>>> d1e0b7dfa7441dbd2ffd6423f6b674a23483e8d0
     );
 };
 
