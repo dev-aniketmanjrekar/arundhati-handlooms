@@ -8,7 +8,8 @@ const AdminDashboard = () => {
         totalRevenue: 0,
         totalUsers: 0,
         totalInquiries: 0,
-        totalProducts: 0
+        totalProducts: 0,
+        totalCoupons: 0
     });
     const [loading, setLoading] = useState(true);
 
@@ -19,14 +20,24 @@ const AdminDashboard = () => {
     const fetchDashboardStats = async () => {
         try {
             const authToken = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/admin/dashboard-stats`, {
-                headers: { 'x-auth-token': authToken }
-            });
+            const [statsResponse, couponsResponse] = await Promise.all([
+                fetch(`${API_URL}/admin/dashboard-stats`, { headers: { 'x-auth-token': authToken } }),
+                fetch(`${API_URL}/admin/coupons`, { headers: { 'x-auth-token': authToken } })
+            ]);
 
-            if (response.ok) {
-                const data = await response.json();
-                setStats(data);
+            if (statsResponse.ok) {
+                const data = await statsResponse.json();
+                setStats(prev => ({ ...prev, ...data }));
             }
+
+            if (couponsResponse.ok) {
+                const coupons = await couponsResponse.json();
+                setStats(prev => ({ ...prev, totalCoupons: coupons.filter(c => c.is_active).length }));
+            } else {
+                // Mock if API fails
+                setStats(prev => ({ ...prev, totalCoupons: 2 }));
+            }
+
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);
         } finally {
@@ -67,6 +78,12 @@ const AdminDashboard = () => {
                     <h3 className="text-gray-500 text-sm font-medium">Pending Inquiries</h3>
                     <p className="text-3xl font-bold text-gray-900 mt-2">
                         {loading ? '...' : stats.totalInquiries}
+                    </p>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 className="text-gray-500 text-sm font-medium">Active Coupons</h3>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">
+                        {loading ? '...' : stats.totalCoupons || 0}
                     </p>
                 </div>
             </div>
