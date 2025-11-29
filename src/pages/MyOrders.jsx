@@ -22,12 +22,15 @@ const MyOrders = () => {
     const fetchOrders = async () => {
         try {
             const authToken = localStorage.getItem('token');
+            console.log('Fetching orders with token:', authToken ? 'Token exists' : 'No token');
             const response = await axios.get(`${API_URL}/orders/my-orders`, {
                 headers: { 'x-auth-token': authToken }
             });
+            console.log('Orders received:', response.data);
             setOrders(response.data);
         } catch (error) {
             console.error('Error fetching orders:', error);
+            console.error('Error response:', error.response?.data);
         } finally {
             setLoading(false);
         }
