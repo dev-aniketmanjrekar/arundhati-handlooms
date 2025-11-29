@@ -120,10 +120,12 @@ const AdminStockNotifications = () => {
                                         )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="text-sm text-gray-600">{notification.email}</div>
-                                                {notification.phone && (
-                                                    <div className="text-xs text-gray-500">{notification.phone}</div>
-                                                )}
+                                                <div>
+                                                    <div className="text-sm text-gray-600">{notification.email}</div>
+                                                    {notification.phone && (
+                                                        <div className="text-xs text-gray-500">{notification.phone}</div>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-600">
                                                 {new Date(notification.created_at).toLocaleDateString()}
