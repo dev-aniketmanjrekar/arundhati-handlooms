@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Plus, X, Edit2, Trash2 } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import PasswordInput from '../../components/PasswordInput';
 import API_URL from '../../config';
+import { useSortableData } from '../../hooks/useSortableData';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -127,12 +128,36 @@ const AdminUsers = () => {
         });
     };
 
+    // Sorting
+    const { items: sortedUsers, requestSort, sortConfig } = useSortableData(users);
+
+    const SortIcon = ({ direction }) => {
+        if (!direction) return <ArrowUpDown size={14} className="ml-1 text-gray-400" />;
+        return direction === 'ascending' ? <ArrowUp size={14} className="ml-1 text-gray-600" /> : <ArrowDown size={14} className="ml-1 text-gray-600" />;
+    };
+
+    const SortableHeader = ({ label, sortKey }) => (
+        <th
+            className="px-6 py-4 font-medium text-gray-500 cursor-pointer hover:bg-gray-100 transition-colors select-none"
+            onClick={() => requestSort(sortKey)}
+        >
+            <div className="flex items-center">
+                {label}
+                <SortIcon direction={sortConfig?.key === sortKey ? sortConfig.direction : null} />
+            </div>
+        </th>
+    );
+
     return (
         <AdminLayout>
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-serif font-bold text-gray-900">Users</h1>
                 <button
-                    onClick={() => { setIsModalOpen(true); setEditingUser(null); resetForm(); }}
+                    onClick={() => {
+                        setEditingUser(null);
+                        resetForm();
+                        setIsModalOpen(true);
+                    }}
                     className="bg-red-800 text-white px-4 py-2 rounded-lg hover:bg-red-900 flex items-center space-x-2"
                 >
                     <Plus size={20} />
@@ -145,22 +170,22 @@ const AdminUsers = () => {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b border-gray-100">
                             <tr>
-                                <th className="px-6 py-4 font-medium text-gray-500">Name</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Email</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Role</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Joined Date</th>
+                                <SortableHeader label="Name" sortKey="name" />
+                                <SortableHeader label="Email" sortKey="email" />
+                                <SortableHeader label="Role" sortKey="role" />
+                                <SortableHeader label="Joined" sortKey="created_at" />
                                 <th className="px-6 py-4 font-medium text-gray-500">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
                                 <tr><td colSpan="5" className="px-6 py-4 text-center">Loading...</td></tr>
-                            ) : users.map((user) => (
+                            ) : sortedUsers.map((user) => (
                                 <tr key={user.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-gray-900">{user.name}</td>
                                     <td className="px-6 py-4 text-gray-600">{user.email}</td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
                                             }`}>
                                             {user.role}
                                         </span>
@@ -169,20 +194,18 @@ const AdminUsers = () => {
                                         {new Date(user.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex gap-2">
+                                        <div className="flex space-x-2">
                                             <button
                                                 onClick={() => handleEdit(user)}
                                                 className="text-blue-600 hover:text-blue-800"
-                                                title="Edit user"
                                             >
-                                                <Edit2 size={18} />
+                                                <Edit2 size={16} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(user.id)}
                                                 className="text-red-600 hover:text-red-800"
-                                                title="Delete user"
                                             >
-                                                <Trash2 size={18} />
+                                                <Trash2 size={16} />
                                             </button>
                                         </div>
                                     </td>

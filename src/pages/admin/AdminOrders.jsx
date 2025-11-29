@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import API_URL from '../../config';
+import { useSortableData } from '../../hooks/useSortableData';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -57,6 +59,26 @@ const AdminOrders = () => {
         }
     };
 
+    // Sorting
+    const { items: sortedOrders, requestSort, sortConfig } = useSortableData(orders);
+
+    const SortIcon = ({ direction }) => {
+        if (!direction) return <ArrowUpDown size={14} className="ml-1 text-gray-400" />;
+        return direction === 'ascending' ? <ArrowUp size={14} className="ml-1 text-gray-600" /> : <ArrowDown size={14} className="ml-1 text-gray-600" />;
+    };
+
+    const SortableHeader = ({ label, sortKey }) => (
+        <th
+            className="px-6 py-4 font-medium text-gray-500 cursor-pointer hover:bg-gray-100 transition-colors select-none"
+            onClick={() => requestSort(sortKey)}
+        >
+            <div className="flex items-center">
+                {label}
+                <SortIcon direction={sortConfig?.key === sortKey ? sortConfig.direction : null} />
+            </div>
+        </th>
+    );
+
     return (
         <AdminLayout>
             <div className="flex justify-between items-center mb-8">
@@ -68,18 +90,18 @@ const AdminOrders = () => {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b border-gray-100">
                             <tr>
-                                <th className="px-6 py-4 font-medium text-gray-500">Order ID</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Customer</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Amount</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Date</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Status</th>
+                                <SortableHeader label="Order ID" sortKey="id" />
+                                <SortableHeader label="Customer" sortKey="user_name" />
+                                <SortableHeader label="Amount" sortKey="total_amount" />
+                                <SortableHeader label="Date" sortKey="created_at" />
+                                <SortableHeader label="Status" sortKey="status" />
                                 <th className="px-6 py-4 font-medium text-gray-500">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
                                 <tr><td colSpan="6" className="px-6 py-4 text-center">Loading...</td></tr>
-                            ) : orders.map((order) => (
+                            ) : sortedOrders.map((order) => (
                                 <tr key={order.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-gray-900">#{order.id}</td>
                                     <td className="px-6 py-4">

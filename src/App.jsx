@@ -22,7 +22,7 @@ import ScrollToTop from './components/ScrollToTop';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProducts from './pages/admin/AdminProducts';
+import AdminProducts from './pages/admin/AdminProducts_new';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminInquiries from './pages/admin/AdminInquiries';
