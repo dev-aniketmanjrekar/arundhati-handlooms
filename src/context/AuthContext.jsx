@@ -12,6 +12,15 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token'));
 
     useEffect(() => {
+        // Validate token from localStorage
+        const storedToken = localStorage.getItem('token');
+        if (storedToken === 'undefined' || storedToken === 'null') {
+            localStorage.removeItem('token');
+            setToken(null);
+            setLoading(false);
+            return;
+        }
+
         if (token && !user) {
             fetchProfile(token);
         } else {
@@ -20,24 +29,22 @@ export const AuthProvider = ({ children }) => {
     }, [token, user]);
 
     const fetchProfile = async (authToken) => {
-        console.log('AuthContext: Fetching profile...');
-        console.log('AuthContext: Token present:', !!authToken);
-        console.log('AuthContext: API_URL:', API_URL);
+        // Double check token validity
+        if (!authToken || authToken === 'undefined' || authToken === 'null') {
+            logout();
+            setLoading(false);
+            return;
+        }
 
         try {
             const response = await axios.get(`${API_URL}/auth/profile`, {
                 headers: { 'x-auth-token': authToken }
             });
-            console.log('AuthContext: Profile fetch success', response.data);
             setUser(response.data);
         } catch (error) {
             console.error('AuthContext: Error fetching profile:', error);
-            if (error.response) {
-                console.error('AuthContext: Error status:', error.response.status);
-                console.error('AuthContext: Error data:', error.response.data);
-            }
             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                console.log('AuthContext: Logging out due to 401/403');
+                console.log('AuthContext: Token invalid or expired. Logging out.');
                 logout();
             }
         } finally {

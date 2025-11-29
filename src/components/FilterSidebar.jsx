@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-const FilterSidebar = ({ filters, setFilters, categories, sizes, isOpen, onClose }) => {
+const FilterSidebar = ({ filters, setFilters, categories, sizes, fabrics, isOpen, onClose }) => {
     const handleCategoryChange = (category) => {
         setFilters(prev => ({
             ...prev,
@@ -60,6 +60,35 @@ const FilterSidebar = ({ filters, setFilters, categories, sizes, isOpen, onClose
                         ))}
                     </div>
                 </div>
+
+                {/* Fabrics */}
+                {fabrics && fabrics.length > 0 && (
+                    <div className="mb-8">
+                        <h3 className="font-medium text-lg mb-4 border-b pb-2">Fabric</h3>
+                        <div className="space-y-2">
+                            <label className="flex items-center space-x-3 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={filters.fabric === ''}
+                                    onChange={() => setFilters(prev => ({ ...prev, fabric: '' }))}
+                                    className="form-checkbox h-4 w-4 text-[var(--color-primary)] rounded border-gray-300 focus:ring-[var(--color-primary)]"
+                                />
+                                <span className="text-gray-600 group-hover:text-[var(--color-primary)] transition-colors">All Fabrics</span>
+                            </label>
+                            {fabrics.map(fabric => (
+                                <label key={fabric} className="flex items-center space-x-3 cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.fabric === fabric}
+                                        onChange={() => setFilters(prev => ({ ...prev, fabric: prev.fabric === fabric ? '' : fabric }))}
+                                        className="form-checkbox h-4 w-4 text-[var(--color-primary)] rounded border-gray-300 focus:ring-[var(--color-primary)]"
+                                    />
+                                    <span className="text-gray-600 group-hover:text-[var(--color-primary)] transition-colors">{fabric}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Sizes */}
                 {sizes && sizes.length > 0 && (

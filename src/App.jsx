@@ -18,6 +18,7 @@ import Returns from './pages/Returns';
 import Contact from './pages/Contact';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -55,6 +56,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
+          <ScrollToTop />
           <Routes>
             {/* Admin Routes - No Navbar/Footer */}
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

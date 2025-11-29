@@ -6,18 +6,28 @@ import axios from 'axios';
 import API_URL from '../config';
 
 const MyOrders = () => {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (authLoading) return;
+
         if (!user) {
             navigate('/login');
             return;
         }
         fetchOrders();
-    }, [user, navigate]);
+    }, [user, authLoading, navigate]);
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-primary)]"></div>
+            </div>
+        );
+    }
 
     const fetchOrders = async () => {
         try {
@@ -27,7 +37,15 @@ const MyOrders = () => {
                 headers: { 'x-auth-token': authToken }
             });
             console.log('Orders received:', response.data);
-            setOrders(response.data);
+
+            // Parse items and shipping_address if they are strings
+            const parsedOrders = response.data.map(order => ({
+                ...order,
+                items: typeof order.items === 'string' ? JSON.parse(order.items) : order.items,
+                shipping_address: typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address
+            }));
+
+            setOrders(parsedOrders);
         } catch (error) {
             console.error('Error fetching orders:', error);
             console.error('Error response:', error.response?.data);
