@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PasswordInput from '../components/PasswordInput';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -61,14 +62,12 @@ const Register = () => {
                         onChange={handleChange}
                     />
 
-                    <input
+                    <PasswordInput
                         name="password"
-                        type="password"
-                        required
-                        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
-                        placeholder="Password"
                         value={formData.password}
                         onChange={handleChange}
+                        placeholder="Password (min 6 characters)"
+                        required
                     />
 
                     <input
