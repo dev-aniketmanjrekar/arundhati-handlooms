@@ -196,96 +196,19 @@ const AdminUsers = () => {
             {/* Add User Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-                        <div className="p-6 border-b flex justify-between items-center">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
                             <h2 className="text-xl font-bold">{editingUser ? 'Edit User' : 'Add New User'}</h2>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">
                                 <X size={24} />
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    className="w-full border rounded-lg px-3 py-2"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    className="w-full border rounded-lg px-3 py-2"
-                                    required
-                                />
-                            </div>
-                            <PasswordInput
-                                label={`Password ${editingUser ? '(leave blank to keep current)' : ''}`}
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                placeholder="Enter password"
-                                required={!editingUser}
-                            />
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleInputChange}
-                                    className="w-full border rounded-lg px-3 py-2"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                <textarea
-                                    name="address"
-                                    value={formData.address}
-                                    onChange={handleInputChange}
-                                    className="w-full border rounded-lg px-3 py-2"
-                                    rows="2"
-                                ></textarea>
-                            </div>
+                        <form onSubmit={handleSubmit} className="p-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                                     <input
                                         type="text"
-                                        name="pincode"
-                                        value={formData.pincode}
-                                        onChange={handleInputChange}
-                                        className="w-full border rounded-lg px-3 py-2"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                                    <select
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleInputChange}
-                                        className="w-full border rounded-lg px-3 py-2"
-                                    >
-                                        <option value="customer">Customer</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="pt-4 flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-                                >
-                                    Cancel
                                 </button>
                                 <button
                                     type="submit"
