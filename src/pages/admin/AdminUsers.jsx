@@ -137,91 +137,16 @@ const AdminUsers = () => {
                 >
                     <Plus size={20} />
                     <span>Add User</span>
+                                >
+                    {editingUser ? 'Update User' : 'Create User'}
                 </button>
             </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th className="px-6 py-4 font-medium text-gray-500">Name</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Email</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Role</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Joined Date</th>
-                                <th className="px-6 py-4 font-medium text-gray-500">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {loading ? (
-                                <tr><td colSpan="5" className="px-6 py-4 text-center">Loading...</td></tr>
-                            ) : users.map((user) => (
-                                <tr key={user.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{user.name}</td>
-                                    <td className="px-6 py-4 text-gray-600">{user.email}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'
-                                            }`}>
-                                            {user.role}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        {new Date(user.created_at).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleEdit(user)}
-                                                className="text-blue-600 hover:text-blue-800"
-                                                title="Edit user"
-                                            >
-                                                <Edit2 size={18} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(user.id)}
-                                                className="text-red-600 hover:text-red-800"
-                                                title="Delete user"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* Add User Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
-                            <h2 className="text-xl font-bold">{editingUser ? 'Edit User' : 'Add New User'}</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">
-                                <X size={24} />
-                            </button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-6">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                                    <input
-                                        type="text"
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-900"
-                                >
-                                    {editingUser ? 'Update User' : 'Create User'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </AdminLayout>
+        </form>
+                </div >
+                </div >
+    )
+}
+        </AdminLayout >
     );
 };
 
