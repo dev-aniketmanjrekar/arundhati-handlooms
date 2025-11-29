@@ -70,7 +70,9 @@ const Cart = () => {
 
         } catch (error) {
             console.error("Order error:", error);
-            alert("Failed to place order. Please try again.");
+            console.error("Error response:", error.response?.data);
+            const errorMessage = error.response?.data?.message || "Failed to place order. Please try again.";
+            alert(`❌ ${errorMessage}`);
         } finally {
             setIsOrdering(false);
         }
