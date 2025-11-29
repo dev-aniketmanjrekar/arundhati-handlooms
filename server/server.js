@@ -545,12 +545,13 @@ app.post('/api/stock-notifications', async (req, res) => {
 app.get('/api/admin/stock-notifications', isAdmin, async (req, res) => {
     try {
         const [notifications] = await pool.query(`
-            SELECT sn.*, p.name as product_name, p.sku, p.image_url,
+            SELECT sn.*, p.name as product_name, p.sku, p.image_url, p.stock_quantity,
                    u.name as user_name, u.email as user_email
             FROM stock_notifications sn
             JOIN products p ON sn.product_id = p.id
             LEFT JOIN users u ON sn.user_id = u.id
-            ORDER BY sn.created_at DESC
+            WHERE p.stock_quantity <= 0
+            ORDER BY p.stock_quantity ASC, sn.created_at DESC
         `);
         res.json(notifications);
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Plus, X, Edit2, Trash2 } from 'lucide-react';
+import PasswordInput from '../../components/PasswordInput';
 import API_URL from '../../config';
 
 const AdminUsers = () => {
@@ -225,19 +226,14 @@ const AdminUsers = () => {
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Password {editingUser && '(leave blank to keep current)'}
-                                </label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    className="w-full border rounded-lg px-3 py-2"
-                                    required={!editingUser}
-                                />
-                            </div>
+                            <PasswordInput
+                                label={`Password ${editingUser ? '(leave blank to keep current)' : ''}`}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                placeholder="Enter password"
+                                required={!editingUser}
+                            />
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                                 <input
