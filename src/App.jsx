@@ -11,6 +11,7 @@ import { CartProvider } from './context/CartContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import MyOrders from './pages/MyOrders';
 import About from './pages/About';
 import ShippingPolicy from './pages/ShippingPolicy';
 import Returns from './pages/Returns';
@@ -59,22 +60,6 @@ function App() {
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
             <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
-            <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-            <Route path="/admin/inquiries" element={<AdminRoute><AdminInquiries /></AdminRoute>} />
-            <Route path="/admin/stock-notifications" element={<AdminRoute><AdminStockNotifications /></AdminRoute>} />
-
-            {/* Customer Routes - With Navbar/Footer */}
-            <Route path="/" element={<CustomerLayout><Home /></CustomerLayout>} />
-            <Route path="/shop" element={<CustomerLayout><Shop /></CustomerLayout>} />
-            <Route path="/product/:slug" element={<CustomerLayout><ProductDetails /></CustomerLayout>} />
-            <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
-            <Route path="/about" element={<CustomerLayout><About /></CustomerLayout>} />
-            <Route path="/contact" element={<CustomerLayout><Contact /></CustomerLayout>} />
-            <Route path="/shipping-policy" element={<CustomerLayout><ShippingPolicy /></CustomerLayout>} />
-            <Route path="/returns" element={<CustomerLayout><Returns /></CustomerLayout>} />
-            <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
-            <Route path="/register" element={<CustomerLayout><Register /></CustomerLayout>} />
-            <Route path="/profile" element={<CustomerLayout><Profile /></CustomerLayout>} />
           </Routes>
         </Router>
       </CartProvider>

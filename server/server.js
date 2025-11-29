@@ -560,16 +560,16 @@ app.get('/api/admin/stock-notifications', isAdmin, async (req, res) => {
     }
 });
 
-// Admin: Mark notification as notified
+//  Admin: Mark notification as notified
 app.put('/api/admin/stock-notifications/:id/notify', isAdmin, async (req, res) => {
     try {
         await pool.query(
-            'UPDATE stock_notifications SET status = ?, notified_at = NOW() WHERE id = ?',
+            'UPDATE stock_notifications SET status = ? WHERE id = ?',
             ['notified', req.params.id]
         );
-        res.json({ message: 'Notification marked as sent' });
+        res.json({ message: 'Notification marked as notified' });
     } catch (error) {
-        console.error('Error updating notification:', error);
+        console.error('Error marking notification:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -581,6 +581,104 @@ app.get('/api/admin/inquiries', isAdmin, async (req, res) => {
         res.json(inquiries);
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// ========== ORDER MANAGEMENT ==========
+
+// Create Order (with stock decrease)
+app.post('/api/orders', auth, async (req, res) => {
+    const { items, shippingAddress, totalAmount } = req.body;
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // 1. Create order
+        const [orderResult] = await connection.query(
+            'INSERT INTO orders (user_id, shipping_address, total_amount, status) VALUES (?, ?, ?, ?)',
+            [req.user.id, JSON.stringify(shippingAddress), totalAmount, 'pending']
+        );
+
+        const orderId = orderResult.insertId;
+
+        // 2. Process each item
+        for (const item of items) {
+            // Check stock availability
+            const [products] = await connection.query(
+                'SELECT stock_quantity FROM products WHERE id = ?',
+                [item.productId]
+            );
+
+            if (products.length === 0) {
+                throw new Error(`Product ${item.productId} not found`);
+            }
+
+            const availableStock = products[0].stock_quantity;
+
+            if (availableStock < item.quantity) {
+                throw new Error(`Insufficient stock for product ${item.productId}. Available: ${availableStock}, Requested: ${item.quantity}`);
+            }
+
+            // Decrease stock
+            await connection.query(
+                'UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?',
+                [item.quantity, item.productId]
+            );
+
+            // Insert order item
+            await connection.query(
+                'INSERT INTO order_items (order_id, product_id, quantity, price, color, size) VALUES (?, ?, ?, ?, ?, ?)',
+                [orderId, item.productId, item.quantity, item.price, item.color || null, item.size || null]
+            );
+        }
+
+        await connection.commit();
+        res.status(201).json({ message: 'Order created successfully', orderId });
+    } catch (error) {
+        await connection.rollback();
+        console.error('Error creating order:', error);
+        res.status(500).json({ message: error.message || 'Failed to create order' });
+    } finally {
+        connection.release();
+    }
+});
+
+// Get user orders
+app.get('/api/orders/my-orders', auth, async (req, res) => {
+    try {
+        const [orders] = await pool.query(`
+            SELECT o.*, 
+                   JSON_ARRAYAGG(
+                       JSON_OBJECT(
+                           'product_id', oi.product_id,
+                           'product_name', p.name,
+                           'quantity', oi.quantity,
+                           'price', oi.price,
+                           'color', oi.color,
+                           'size', oi.size,
+                           'image_url', p.image_url
+                       )
+                   ) as items
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            LEFT JOIN products p ON oi.product_id = p.id
+            WHERE o.user_id = ?
+            GROUP BY o.id
+            ORDER BY o.created_at DESC
+        `, [req.user.id]);
+
+        // Parse items  JSON
+        const formattedOrders = orders.map(order => ({
+            ...order,
+            items: order.items || [],
+            shipping_address: typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address
+        }));
+
+        res.json(formattedOrders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
