@@ -50,8 +50,9 @@ export const CartProvider = ({ children }) => {
 
     const getCartTotal = () => {
         return cart.reduce((total, item) => {
+            if (!item || !item.price) return total;
             const price = item.discount_percent ? item.price * (1 - item.discount_percent / 100) : item.price;
-            return total + price * item.quantity;
+            return total + (price || 0) * (item.quantity || 1);
         }, 0);
     };
 

@@ -9,13 +9,17 @@ import API_URL from '../config';
 const FREE_SHIPPING_THRESHOLD = 5000;
 
 const CartItem = ({ item, updateQuantity, removeFromCart }) => {
+    if (!item) return null;
+
     const price = item.discount_percent ? item.price * (1 - item.discount_percent / 100) : item.price;
-    const originalPrice = item.price;
+    const originalPrice = item.price || 0;
+    const finalPrice = price || 0;
+    const quantity = item.quantity || 1;
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-6 items-start sm:items-center transition-all hover:shadow-md">
             <div className="w-full sm:w-32 h-32 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
-                <img src={item.image_url || item.image} alt={item.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                <img src={item.image_url || item.image || 'https://via.placeholder.com/150'} alt={item.name || 'Product'} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
             </div>
 
             <div className="flex-1 w-full">
@@ -23,7 +27,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart }) => {
                     <div>
                         <Link to={`/product/${item.slug}`}>
                             <h3 className="font-serif font-medium text-lg text-gray-900 hover:text-[var(--color-primary)] transition-colors">
-                                {item.name}
+                                {item.name || 'Unknown Product'}
                             </h3>
                         </Link>
                         <p className="text-sm text-gray-500 mt-1">{item.category} • {item.color} • {item.size || 'Free Size'}</p>
@@ -40,15 +44,15 @@ const CartItem = ({ item, updateQuantity, removeFromCart }) => {
                 <div className="flex justify-between items-end">
                     <div className="flex items-center border border-gray-200 rounded-lg bg-gray-50">
                         <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, quantity - 1)}
                             className="px-3 py-1.5 hover:bg-gray-200 text-gray-600 transition-colors rounded-l-lg"
-                            disabled={item.quantity <= 1}
+                            disabled={quantity <= 1}
                         >
                             -
                         </button>
-                        <span className="w-10 text-center font-medium text-sm text-gray-900">{item.quantity}</span>
+                        <span className="w-10 text-center font-medium text-sm text-gray-900">{quantity}</span>
                         <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, quantity + 1)}
                             className="px-3 py-1.5 hover:bg-gray-200 text-gray-600 transition-colors rounded-r-lg"
                         >
                             +
@@ -58,15 +62,15 @@ const CartItem = ({ item, updateQuantity, removeFromCart }) => {
                         {item.discount_percent > 0 ? (
                             <>
                                 <p className="font-bold text-lg text-[var(--color-primary)]">
-                                    ₹{(price * item.quantity).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                    ₹{(finalPrice * quantity).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                 </p>
                                 <p className="text-xs text-gray-400 line-through">
-                                    ₹{(originalPrice * item.quantity).toLocaleString()}
+                                    ₹{(originalPrice * quantity).toLocaleString()}
                                 </p>
                             </>
                         ) : (
                             <p className="font-bold text-lg text-[var(--color-primary)]">
-                                ₹{(price * item.quantity).toLocaleString()}
+                                ₹{(finalPrice * quantity).toLocaleString()}
                             </p>
                         )}
                     </div>
