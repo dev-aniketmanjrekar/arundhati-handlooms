@@ -398,6 +398,67 @@ app.put('/api/auth/profile', auth, async (req, res) => {
     }
 });
 
+// User: Change own password
+app.put('/api/auth/change-password', auth, async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    try {
+        // Get user with password
+        const [users] = await pool.query('SELECT password FROM users WHERE id = ?', [req.user.id]);
+
+        if (users.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify old password
+        const isMatch = await bcrypt.compare(oldPassword, users[0].password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+
+        // Validate new password
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' });
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password
+        await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, req.user.id]);
+
+        res.json({ success: true, message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Admin: Reset user password
+app.put('/api/admin/users/:id/reset-password', isAdmin, async (req, res) => {
+    const { newPassword } = req.body;
+
+    try {
+        // Validate password
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password
+        await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, req.params.id]);
+
+        res.json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Delete Product
 app.delete('/api/admin/products/:id', isAdmin, async (req, res) => {
     try {

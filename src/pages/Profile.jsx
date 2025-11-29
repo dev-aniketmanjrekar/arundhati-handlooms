@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { User, MapPin, Phone, Mail, LogOut, Edit2, Save, X } from 'lucide-react';
+import { User, MapPin, Phone, Mail, LogOut, Edit2, Save, X, Key } from 'lucide-react';
+import PasswordInput from '../components/PasswordInput';
 import axios from 'axios';
 import API_URL from '../config';
 
@@ -9,6 +10,7 @@ const Profile = () => {
     const { user, logout, setUser } = useAuth();
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
+    const [showPasswordChange, setShowPasswordChange] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -16,7 +18,14 @@ const Profile = () => {
         address: '',
         pincode: ''
     });
+    const [passwordData, setPasswordData] = useState({
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
     const [saving, setSaving] = useState(false);
+    const [passwordError, setPasswordError] = useState('');
+    const [passwordSuccess, setPasswordSuccess] = useState('');
 
     useEffect(() => {
         if (user) {
@@ -75,6 +84,49 @@ const Profile = () => {
             pincode: user.pincode || ''
         });
         setIsEditing(false);
+    };
+
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordData(prev => ({ ...prev, [name]: value }));
+        setPasswordError('');
+    };
+
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+        setPasswordError('');
+        setPasswordSuccess('');
+
+        if (passwordData.newPassword.length < 6) {
+            setPasswordError('Password must be at least 6 characters');
+            return;
+        }
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            setPasswordError('New passwords do not match');
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const authToken = localStorage.getItem('token');
+            await axios.put(`${API_URL}/auth/change-password`, {
+                oldPassword: passwordData.oldPassword,
+                newPassword: passwordData.newPassword
+            }, {
+                headers: { 'x-auth-token': authToken }
+            });
+
+            setPasswordSuccess('Password updated successfully!');
+            setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+            setTimeout(() => {
+                setShowPasswordChange(false);
+                setPasswordSuccess('');
+            }, 2000);
+        } catch (error) {
+            setPasswordError(error.response?.data?.message || 'Failed to update password');
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -224,6 +276,97 @@ const Profile = () => {
                                     Cancel
                                 </button>
                             </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Password Change Section */}
+                <div className="bg-white rounded-lg shadow-md overflow-hidden mt-6">
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-serif font-bold flex items-center gap-2">
+                                <Key size={20} />
+                                Change Password
+                            </h3>
+                            {!showPasswordChange && (
+                                <button
+                                    onClick={() => setShowPasswordChange(true)}
+                                    className="text-[var(--color-primary)] hover:text-[var(--color-accent)] font-medium text-sm"
+                                >
+                                    Update Password
+                                </button>
+                            )}
+                        </div>
+
+                        {showPasswordChange && (
+                            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                                {passwordError && (
+                                    <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+                                        {passwordError}
+                                    </div>
+                                )}
+                                {passwordSuccess && (
+                                    <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
+                                        {passwordSuccess}
+                                    </div>
+                                )}
+
+                                <PasswordInput
+                                    label="Current Password"
+                                    name="oldPassword"
+                                    value={passwordData.oldPassword}
+                                    onChange={handlePasswordChange}
+                                    required
+                                    placeholder="Enter current password"
+                                />
+
+                                <PasswordInput
+                                    label="New Password"
+                                    name="newPassword"
+                                    value={passwordData.newPassword}
+                                    onChange={handlePasswordChange}
+                                    required
+                                    placeholder="Enter new password (min 6 characters)"
+                                />
+
+                                <PasswordInput
+                                    label="Re-enter New Password"
+                                    name="confirmPassword"
+                                    value={passwordData.confirmPassword}
+                                    onChange={handlePasswordChange}
+                                    required
+                                    placeholder="Re-enter new password"
+                                />
+
+                                <div className="flex gap-3 pt-2">
+                                    <button
+                                        type="submit"
+                                        disabled={saving}
+                                        className="flex items-center gap-2 px-6 py-2 bg-[var(--color-primary)] text-white rounded-md hover:bg-[var(--color-accent)] disabled:opacity-50"
+                                    >
+                                        <Save size={18} />
+                                        {saving ? 'Updating...' : 'Update Password'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowPasswordChange(false);
+                                            setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                                            setPasswordError('');
+                                        }}
+                                        className="flex items-center gap-2 px-6 py-2 border rounded-md hover:bg-gray-50"
+                                    >
+                                        <X size={18} />
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {!showPasswordChange && (
+                            <p className="text-sm text-gray-500">
+                                Keep your account secure by regularly updating your password.
+                            </p>
                         )}
                     </div>
                 </div>
