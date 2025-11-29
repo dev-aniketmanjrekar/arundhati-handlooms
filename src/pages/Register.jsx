@@ -42,6 +42,7 @@ const Register = () => {
                 <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
                     {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 
+                    {/* Name (Full Width) */}
                     <input
                         name="name"
                         type="text"
@@ -52,34 +53,50 @@ const Register = () => {
                         onChange={handleChange}
                     />
 
-                    <input
-                        name="email"
-                        type="email"
-                        required
-                        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
-                        placeholder="Email address"
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
+                    {/* Row 1: Email + Password */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                            name="email"
+                            type="email"
+                            required
+                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
+                            placeholder="Email address"
+                            value={formData.email}
+                            onChange={handleChange}
+                        />
+                        <PasswordInput
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Password (min 6 characters)"
+                            required
+                        />
+                    </div>
 
-                    <PasswordInput
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Password (min 6 characters)"
-                        required
-                    />
+                    {/* Row 2: Phone + Pincode */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                            name="phone"
+                            type="tel"
+                            required
+                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
+                            placeholder="Phone Number"
+                            value={formData.phone}
+                            onChange={handleChange}
+                        />
+                        <input
+                            name="pincode"
+                            type="text"
+                            required
+                            className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
+                            placeholder="Pincode"
+                            value={formData.pincode}
+                            onChange={handleChange}
+                            maxLength={6}
+                        />
+                    </div>
 
-                    <input
-                        name="phone"
-                        type="tel"
-                        required
-                        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
-                        placeholder="Phone Number"
-                        value={formData.phone}
-                        onChange={handleChange}
-                    />
-
+                    {/* Address (Full Width) */}
                     <textarea
                         name="address"
                         required
@@ -87,16 +104,6 @@ const Register = () => {
                         placeholder="Delivery Address"
                         rows="3"
                         value={formData.address}
-                        onChange={handleChange}
-                    />
-
-                    <input
-                        name="pincode"
-                        type="text"
-                        required
-                        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] sm:text-sm"
-                        placeholder="Pincode"
-                        value={formData.pincode}
                         onChange={handleChange}
                     />
 
