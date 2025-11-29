@@ -85,6 +85,86 @@ const Cart = () => {
     const { user, loading } = useAuth();
     const navigate = useNavigate();
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const [isOrdering, setIsOrdering] = useState(false);
+    const [couponCode, setCouponCode] = useState('');
+    const [orderNote, setOrderNote] = useState('');
+    const [showCouponInput, setShowCouponInput] = useState(false);
+
+    const cartTotal = getCartTotal();
+    const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - cartTotal;
+    const progressPercentage = Math.min((cartTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+
+    const handlePlaceOrder = async () => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+
+        if (!user.address || !user.pincode) {
+            alert("Please update your address and pincode in your profile before placing an order.");
+            navigate('/profile');
+            return;
+        }
+
+        setIsOrdering(true);
+
+        try {
+            const orderItems = cart.map(item => ({
+                productId: item.id,
+                quantity: item.quantity,
+                price: item.discount_percent ? item.price * (1 - item.discount_percent / 100) : item.price,
+                color: item.color,
+                size: item.size
+            }));
+
+            const shippingAddress = {
+                name: user.name,
+                address: user.address,
+                pincode: user.pincode,
+                phone: user.phone
+            };
+
+            const response = await axios.post(`${API_URL}/orders`, {
+                items: orderItems,
+                shippingAddress,
+                totalAmount: cartTotal,
+                note: orderNote // Send order note
+            }, {
+                headers: { 'x-auth-token': localStorage.getItem('token') }
+            });
+
+            const data = response.data;
+
+            // WhatsApp Integration
+            const phoneNumber = "917021512319";
+            let message = `Hello Arundhati Handlooms, I would like to place an order (Order ID: #${data.orderId}):\n\n`;
+
+            cart.forEach((item, index) => {
+                const price = item.discount_percent ? item.price * (1 - item.discount_percent / 100) : item.price;
+                message += `${index + 1}. ${item.name} (${item.category}) - ${item.color}\n`;
+                message += `   Qty: ${item.quantity} x ₹${price.toLocaleString(undefined, { maximumFractionDigits: 0 })} = ₹${(item.quantity * price).toLocaleString(undefined, { maximumFractionDigits: 0 })}\n\n`;
+            });
+
+            message += `Total Amount: ₹${cartTotal.toLocaleString()}\n`;
+            if (orderNote) message += `Note: ${orderNote}\n`;
+            message += `Shipping to: ${user.address}, ${user.pincode}\n\n`;
+            message += "Please confirm availability and payment details.";
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+            clearCart();
+            navigate('/');
+
+        } catch (error) {
+            console.error("Order error:", error);
+            const errorMessage = error.response?.data?.message || "Failed to place order. Please try again.";
+            alert(`❌ ${errorMessage}`);
+        } finally {
+            setIsOrdering(false);
+        }
+    };
 
     useEffect(() => {
         const fetchRelatedProducts = async () => {
