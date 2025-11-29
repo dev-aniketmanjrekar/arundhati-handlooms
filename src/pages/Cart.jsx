@@ -27,18 +27,29 @@ const Cart = () => {
         setIsOrdering(true);
 
         try {
-            // 1. Save Order to Database
-            const orderData = {
-                items: cart,
-                totalAmount: getCartTotal(),
-                shippingAddress: user.address,
-                shippingPincode: user.pincode
+            // 1. Prepare order data for new API
+            const orderItems = cart.map(item => ({
+                productId: item.id,  // ← This was missing!
+                quantity: item.quantity,
+                price: item.discount_percent ? item.price * (1 - item.discount_percent / 100) : item.price,
+                color: item.color,
+                size: item.size
+            }));
+
+            const shippingAddress = {
+                name: user.name,
+                address: user.address,
+                pincode: user.pincode,
+                phone: user.phone
             };
 
-            const response = await axios.post(`${API_URL}/orders`, orderData, {
-                headers: {
-                    'x-auth-token': localStorage.getItem('token')
-                }
+            // 2. Create order in database (stock will be decreased automatically)
+            const response = await axios.post(`${API_URL}/orders`, {
+                items: orderItems,
+                shippingAddress,
+                totalAmount: getCartTotal()
+            }, {
+                headers: { 'x-auth-token': localStorage.getItem('token') }
             });
 
             const data = response.data;
