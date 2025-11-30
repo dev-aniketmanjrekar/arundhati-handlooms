@@ -27,11 +27,12 @@ const AdminLayout = ({ children }) => {
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
-            <aside className="w-64 bg-white shadow-md flex flex-col">
-                <div className="p-6 border-b flex justify-center">
-                    <img src="/images/logo.png" alt="Arundhati Admin" className="h-12 w-auto object-contain" />
+            {/* Sidebar */}
+            <aside className="w-64 bg-white shadow-xl flex flex-col z-10">
+                <div className="h-24 border-b flex items-center justify-center p-4">
+                    <img src="/images/logo.png" alt="Arundhati Admin" className="h-16 w-auto object-contain" />
                 </div>
-                <nav className="flex-1 p-4 space-y-2">
+                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.path;
@@ -39,24 +40,24 @@ const AdminLayout = ({ children }) => {
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                    ? 'bg-red-50 text-red-800'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
+                                    ? 'bg-[var(--color-primary)] text-white shadow-md transform scale-105'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-[var(--color-primary)]'
                                     }`}
                             >
-                                <Icon size={20} />
+                                <Icon size={20} className={isActive ? 'text-white' : 'group-hover:text-[var(--color-primary)]'} />
                                 <span className="font-medium">{item.label}</span>
                             </Link>
                         );
                     })}
                 </nav>
-                <div className="p-4 border-t">
+                <div className="p-4 border-t bg-gray-50">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center space-x-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="flex items-center space-x-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-100 rounded-xl transition-colors font-medium"
                     >
                         <LogOut size={20} />
-                        <span className="font-medium">Logout</span>
+                        <span>Logout</span>
                     </button>
                 </div>
             </aside>
