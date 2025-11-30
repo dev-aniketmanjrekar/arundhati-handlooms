@@ -1,7 +1,54 @@
-import React from 'react';
-import { X, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, RotateCcw, ChevronDown, ChevronUp, Check } from 'lucide-react';
+
+const FilterSection = ({ title, isOpen, onToggle, children }) => (
+    <div className="border-b border-gray-100 py-6 last:border-0">
+        <button
+            onClick={onToggle}
+            className="flex justify-between items-center w-full group"
+        >
+            <h3 className="font-serif font-bold text-lg text-gray-900 group-hover:text-[var(--color-primary)] transition-colors">{title}</h3>
+            {isOpen ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+        </button>
+        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
+            {children}
+        </div>
+    </div>
+);
+
+const CheckboxItem = ({ label, checked, onChange }) => (
+    <label className="flex items-center gap-3 cursor-pointer group py-1.5 select-none">
+        <div className={`w-5 h-5 border rounded flex items-center justify-center transition-all duration-200 ${checked
+                ? 'bg-[var(--color-primary)] border-[var(--color-primary)]'
+                : 'border-gray-300 bg-white group-hover:border-[var(--color-primary)]'
+            }`}>
+            {checked && <Check size={12} className="text-white" strokeWidth={3} />}
+        </div>
+        <span className={`text-sm transition-colors ${checked ? 'text-gray-900 font-medium' : 'text-gray-600 group-hover:text-gray-900'}`}>
+            {label}
+        </span>
+        <input
+            type="checkbox"
+            className="hidden"
+            checked={checked}
+            onChange={onChange}
+        />
+    </label>
+);
 
 const FilterSidebar = ({ filters, setFilters, categories, sizes, fabrics, isOpen, onClose }) => {
+    // State for collapsible sections
+    const [openSections, setOpenSections] = useState({
+        category: true,
+        fabric: true,
+        size: true,
+        price: true
+    });
+
+    const toggleSection = (section) => {
+        setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+    };
+
     const handleCategoryChange = (category) => {
         setFilters(prev => ({
             ...prev,
@@ -43,168 +90,181 @@ const FilterSidebar = ({ filters, setFilters, categories, sizes, fabrics, isOpen
         });
     };
 
-    const FilterChip = ({ label, isActive, onClick }) => (
-        <button
-            onClick={onClick}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${isActive
-                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-md transform scale-105'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]'
-                }`}
-        >
-            {label}
-        </button>
-    );
-
     return (
-        <div className={`
-      fixed inset-y-0 left-0 z-40 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
-      md:relative md:transform-none md:w-72 md:shadow-none md:block md:bg-transparent
-      ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-    `}>
-            <div className="h-full overflow-y-auto bg-white md:bg-transparent md:pr-4">
-                {/* Mobile Header */}
-                <div className="flex justify-between items-center p-6 md:hidden border-b">
-                    <h2 className="text-xl font-serif font-bold text-gray-900">Filters</h2>
-                    <button onClick={onClose} className="text-gray-500 hover:text-red-500 transition-colors">
-                        <X size={24} />
-                    </button>
-                </div>
+        <>
+            {/* Backdrop for mobile */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm transition-opacity"
+                    onClick={onClose}
+                />
+            )}
 
-                {/* Desktop Header / Reset */}
-                <div className="hidden md:flex justify-between items-center mb-6">
-                    <h3 className="font-serif font-bold text-xl text-gray-800">Filters</h3>
-                    <button
-                        onClick={resetFilters}
-                        className="text-xs text-gray-500 hover:text-[var(--color-primary)] flex items-center gap-1 transition-colors"
-                    >
-                        <RotateCcw size={12} /> Reset
-                    </button>
-                </div>
-
-                <div className="p-6 md:p-0 space-y-8">
-                    {/* Categories */}
-                    <div className="bg-white md:p-6 md:rounded-2xl md:shadow-sm">
-                        <h3 className="font-serif font-bold text-lg mb-4 text-gray-800">Categories</h3>
-                        <div className="flex flex-wrap gap-2">
-                            <FilterChip
-                                label="All"
-                                isActive={filters.category === ''}
-                                onClick={() => setFilters(prev => ({ ...prev, category: '' }))}
-                            />
-                            {categories.map(cat => (
-                                <FilterChip
-                                    key={cat}
-                                    label={cat}
-                                    isActive={filters.category === cat}
-                                    onClick={() => handleCategoryChange(cat)}
-                                />
-                            ))}
+            <div className={`
+                fixed inset-y-0 left-0 z-40 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
+                md:relative md:transform-none md:w-72 md:shadow-none md:block md:bg-transparent md:border-r md:border-gray-100 md:pr-8
+                ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+            `}>
+                <div className="h-full flex flex-col bg-white md:bg-transparent">
+                    {/* Header */}
+                    <div className="flex justify-between items-center p-6 border-b md:border-none md:px-0 md:pt-0">
+                        <h2 className="text-xl font-serif font-bold text-gray-900">Filters</h2>
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={resetFilters}
+                                className="text-xs font-medium text-gray-500 hover:text-[var(--color-primary)] flex items-center gap-1 transition-colors uppercase tracking-wider"
+                            >
+                                <RotateCcw size={12} /> Reset
+                            </button>
+                            <button onClick={onClose} className="md:hidden text-gray-500 hover:text-red-500 transition-colors">
+                                <X size={24} />
+                            </button>
                         </div>
                     </div>
 
-                    {/* Fabrics */}
-                    {fabrics && fabrics.length > 0 && (
-                        <div className="bg-white md:p-6 md:rounded-2xl md:shadow-sm">
-                            <h3 className="font-serif font-bold text-lg mb-4 text-gray-800">Fabric</h3>
-                            <div className="flex flex-wrap gap-2">
-                                <FilterChip
-                                    label="All"
-                                    isActive={filters.fabric === ''}
-                                    onClick={() => setFilters(prev => ({ ...prev, fabric: '' }))}
+                    {/* Scrollable Content */}
+                    <div className="flex-1 overflow-y-auto p-6 md:px-0 md:py-2 custom-scrollbar">
+                        {/* Categories */}
+                        <FilterSection
+                            title="Categories"
+                            isOpen={openSections.category}
+                            onToggle={() => toggleSection('category')}
+                        >
+                            <div className="space-y-1">
+                                <CheckboxItem
+                                    label="All Products"
+                                    checked={filters.category === ''}
+                                    onChange={() => setFilters(prev => ({ ...prev, category: '' }))}
                                 />
-                                {fabrics.map(fabric => (
-                                    <FilterChip
-                                        key={fabric}
-                                        label={fabric}
-                                        isActive={filters.fabric === fabric}
-                                        onClick={() => handleFabricChange(fabric)}
+                                {categories.map(cat => (
+                                    <CheckboxItem
+                                        key={cat}
+                                        label={cat}
+                                        checked={filters.category === cat}
+                                        onChange={() => handleCategoryChange(cat)}
                                     />
                                 ))}
                             </div>
-                        </div>
-                    )}
+                        </FilterSection>
 
-                    {/* Sizes */}
-                    {sizes && sizes.length > 0 && (
-                        <div className="bg-white md:p-6 md:rounded-2xl md:shadow-sm">
-                            <h3 className="font-serif font-bold text-lg mb-4 text-gray-800">Size</h3>
-                            <div className="flex flex-wrap gap-2">
-                                <FilterChip
-                                    label="All"
-                                    isActive={filters.size === ''}
-                                    onClick={() => setFilters(prev => ({ ...prev, size: '' }))}
-                                />
-                                {sizes.map(size => (
-                                    <FilterChip
-                                        key={size}
-                                        label={size}
-                                        isActive={filters.size === size}
-                                        onClick={() => handleSizeChange(size)}
+                        {/* Fabrics */}
+                        {fabrics && fabrics.length > 0 && (
+                            <FilterSection
+                                title="Fabric"
+                                isOpen={openSections.fabric}
+                                onToggle={() => toggleSection('fabric')}
+                            >
+                                <div className="space-y-1">
+                                    <CheckboxItem
+                                        label="All Fabrics"
+                                        checked={filters.fabric === ''}
+                                        onChange={() => setFilters(prev => ({ ...prev, fabric: '' }))}
                                     />
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                                    {fabrics.map(fabric => (
+                                        <CheckboxItem
+                                            key={fabric}
+                                            label={fabric}
+                                            checked={filters.fabric === fabric}
+                                            onChange={() => handleFabricChange(fabric)}
+                                        />
+                                    ))}
+                                </div>
+                            </FilterSection>
+                        )}
 
-                    {/* Price Range */}
-                    <div className="bg-white md:p-6 md:rounded-2xl md:shadow-sm">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-serif font-bold text-lg text-gray-800">Price Range</h3>
-                            <span className="text-sm font-medium text-[var(--color-primary)]">
-                                ₹{filters.priceRange.min} - ₹{filters.priceRange.max}
-                            </span>
-                        </div>
-                        <div className="space-y-6">
-                            <input
-                                type="range"
-                                min="0"
-                                max="100000"
-                                step="1000"
-                                value={filters.priceRange.max}
-                                onChange={(e) => setFilters(prev => ({ ...prev, priceRange: { ...prev.priceRange, max: Number(e.target.value) } }))}
-                                className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)] hover:accent-[var(--color-secondary)] transition-colors"
-                            />
-                            <div className="flex gap-4">
-                                <div className="flex-1">
-                                    <label className="text-xs text-gray-500 mb-1 block uppercase tracking-wider">Min Price</label>
-                                    <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
-                                        <input
-                                            type="number"
-                                            name="min"
-                                            value={filters.priceRange.min}
-                                            onChange={handlePriceChange}
-                                            className="w-full pl-7 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all"
-                                        />
-                                    </div>
+                        {/* Sizes */}
+                        {sizes && sizes.length > 0 && (
+                            <FilterSection
+                                title="Size"
+                                isOpen={openSections.size}
+                                onToggle={() => toggleSection('size')}
+                            >
+                                <div className="grid grid-cols-3 gap-2">
+                                    <button
+                                        onClick={() => setFilters(prev => ({ ...prev, size: '' }))}
+                                        className={`py-2 text-sm border rounded hover:border-[var(--color-primary)] transition-colors ${filters.size === ''
+                                                ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                                                : 'bg-white text-gray-600 border-gray-200'
+                                            }`}
+                                    >
+                                        All
+                                    </button>
+                                    {sizes.map(size => (
+                                        <button
+                                            key={size}
+                                            onClick={() => handleSizeChange(size)}
+                                            className={`py-2 text-sm border rounded hover:border-[var(--color-primary)] transition-colors ${filters.size === size
+                                                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                                                    : 'bg-white text-gray-600 border-gray-200'
+                                                }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
                                 </div>
-                                <div className="flex-1">
-                                    <label className="text-xs text-gray-500 mb-1 block uppercase tracking-wider">Max Price</label>
-                                    <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
-                                        <input
-                                            type="number"
-                                            name="max"
-                                            value={filters.priceRange.max}
-                                            onChange={handlePriceChange}
-                                            className="w-full pl-7 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all"
-                                        />
+                            </FilterSection>
+                        )}
+
+                        {/* Price Range */}
+                        <FilterSection
+                            title="Price"
+                            isOpen={openSections.price}
+                            onToggle={() => toggleSection('price')}
+                        >
+                            <div className="space-y-6 pt-2">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100000"
+                                    step="1000"
+                                    value={filters.priceRange.max}
+                                    onChange={(e) => setFilters(prev => ({ ...prev, priceRange: { ...prev.priceRange, max: Number(e.target.value) } }))}
+                                    className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)] hover:accent-[var(--color-secondary)] transition-colors"
+                                />
+                                <div className="flex items-center gap-4">
+                                    <div className="flex-1">
+                                        <label className="text-[10px] text-gray-400 uppercase tracking-wider mb-1 block">Min</label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                                            <input
+                                                type="number"
+                                                name="min"
+                                                value={filters.priceRange.min}
+                                                onChange={handlePriceChange}
+                                                className="w-full pl-6 pr-2 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex-1">
+                                        <label className="text-[10px] text-gray-400 uppercase tracking-wider mb-1 block">Max</label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                                            <input
+                                                type="number"
+                                                name="max"
+                                                value={filters.priceRange.max}
+                                                onChange={handlePriceChange}
+                                                className="w-full pl-6 pr-2 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </FilterSection>
                     </div>
 
-                    {/* Mobile Reset Button */}
-                    <button
-                        onClick={resetFilters}
-                        className="w-full md:hidden py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
-                    >
-                        <RotateCcw size={18} /> Reset All Filters
-                    </button>
+                    {/* Mobile Footer */}
+                    <div className="p-6 border-t md:hidden bg-gray-50">
+                        <button
+                            onClick={onClose}
+                            className="w-full py-3 bg-[var(--color-primary)] text-white font-medium rounded-lg shadow-lg active:scale-95 transition-transform"
+                        >
+                            Show Results
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
