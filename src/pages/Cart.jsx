@@ -304,7 +304,7 @@ const Cart = () => {
                                             placeholder="Enter code"
                                             className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
                                         />
-                                        <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
+                                        <button className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[var(--color-accent)]">
                                             Apply
                                         </button>
                                     </div>

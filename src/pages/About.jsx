@@ -107,23 +107,23 @@ const About = () => {
             </section>
 
             {/* Values */}
-            <section className="py-24 bg-gray-900 text-white">
+            <section className="py-24 bg-[var(--color-primary)] text-white">
                 <div className="container mx-auto px-4">
                     <div className="grid md:grid-cols-3 gap-12 text-center">
                         <div className="p-6">
                             <Award size={48} className="mx-auto mb-6 text-[var(--color-secondary)]" />
-                            <h3 className="text-2xl font-serif font-bold mb-4">100% Authentic</h3>
-                            <p className="text-gray-400 leading-relaxed">Silk Mark certified products sourced directly from the weavers of Banaras, Chanderi, and Kanchipuram.</p>
+                            <h3 className="text-2xl font-serif font-bold mb-4 text-white">100% Authentic</h3>
+                            <p className="text-red-50 leading-relaxed">Silk Mark certified products sourced directly from the weavers of Banaras, Chanderi, and Kanchipuram.</p>
                         </div>
-                        <div className="p-6 border-l border-r border-gray-800">
+                        <div className="p-6 border-l border-r border-white/10">
                             <Users size={48} className="mx-auto mb-6 text-[var(--color-secondary)]" />
-                            <h3 className="text-2xl font-serif font-bold mb-4">Community First</h3>
-                            <p className="text-gray-400 leading-relaxed">We support over 200 artisan families, ensuring fair wages, healthcare, and sustainable livelihoods.</p>
+                            <h3 className="text-2xl font-serif font-bold mb-4 text-white">Community First</h3>
+                            <p className="text-red-50 leading-relaxed">We support over 200 artisan families, ensuring fair wages, healthcare, and sustainable livelihoods.</p>
                         </div>
                         <div className="p-6">
                             <Heart size={48} className="mx-auto mb-6 text-[var(--color-secondary)]" />
-                            <h3 className="text-2xl font-serif font-bold mb-4">Made with Love</h3>
-                            <p className="text-gray-400 leading-relaxed">Each saree takes 2-4 weeks to weave, carrying the dedication and passion of its creator.</p>
+                            <h3 className="text-2xl font-serif font-bold mb-4 text-white">Made with Love</h3>
+                            <p className="text-red-50 leading-relaxed">Each saree takes 2-4 weeks to weave, carrying the dedication and passion of its creator.</p>
                         </div>
                     </div>
                 </div>
