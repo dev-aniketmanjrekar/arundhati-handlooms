@@ -23,7 +23,7 @@ const Navbar = () => {
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
                     <Link to="/" className="flex items-center">
-                        <img src="/src/assets/logo.png" alt="Arundhati Handlooms" className="h-16 w-auto object-contain" />
+                        <img src="/images/logo.png" alt="Arundhati Handlooms" className="h-16 w-auto object-contain" />
                     </Link>
 
                     {/* Desktop Menu */}
