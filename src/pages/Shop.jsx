@@ -130,12 +130,13 @@ const Shop = () => {
             />
 
             {/* Hero Section */}
-            <div className="relative bg-[var(--color-primary)] text-white py-20 mb-12 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+            <div className="relative bg-[var(--color-primary)] py-20 mb-12 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)] to-[#3a0000]"></div>
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
                 <div className="container mx-auto px-4 text-center relative z-10">
-                    <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 tracking-wide">Our Collection</h1>
-                    <div className="w-24 h-1 bg-[var(--color-secondary)] mx-auto mb-8 rounded-full"></div>
-                    <p className="text-xl opacity-90 max-w-2xl mx-auto font-light leading-relaxed">
+                    <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 tracking-wide text-white drop-shadow-md">Our Collection</h1>
+                    <div className="w-24 h-1 bg-[var(--color-secondary)] mx-auto mb-8 rounded-full shadow-sm"></div>
+                    <p className="text-xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed">
                         Discover the timeless elegance of handwoven sarees, crafted with passion and tradition.
                     </p>
                 </div>
