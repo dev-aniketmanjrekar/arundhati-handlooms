@@ -29,7 +29,7 @@ const AdminLayout = ({ children }) => {
             {/* Sidebar */}
             <aside className="w-64 bg-white shadow-md flex flex-col">
                 <div className="p-6 border-b flex justify-center">
-                    <img src="/src/assets/logo.png" alt="Arundhati Admin" className="h-12 w-auto object-contain" />
+                    <img src="/images/logo.png" alt="Arundhati Admin" className="h-12 w-auto object-contain" />
                 </div>
                 <nav className="flex-1 p-4 space-y-2">
                     {navItems.map((item) => {

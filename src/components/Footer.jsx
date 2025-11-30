@@ -10,7 +10,7 @@ const Footer = () => {
                     {/* Brand Info */}
                     <div>
                         <Link to="/" className="mb-6 block">
-                            <img src="/src/assets/logo.png" alt="Arundhati Handlooms" className="h-20 w-auto object-contain bg-white/10 rounded-lg p-2" />
+                            <img src="/images/logo.png" alt="Arundhati Handlooms" className="h-20 w-auto object-contain bg-white/10 rounded-lg p-2" />
                         </Link>
                         <p className="text-gray-200 mb-6 leading-relaxed">
                             Celebrating the timeless elegance of Indian handlooms. We bring you authentic, handcrafted sarees and blouses directly from master weavers.

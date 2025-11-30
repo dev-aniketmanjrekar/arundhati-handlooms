@@ -329,7 +329,7 @@ const Home = () => {
                         </div>
                         <div className="md:w-1/2">
                             <span className="text-[var(--color-secondary)] tracking-widest text-sm font-medium uppercase mb-2 block">Our Heritage</span>
-                            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight">
+                            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight text-white">
                                 {pageContent?.heritageTitle || <>The Art of <br />Timeless Weaving</>}
                             </h2>
                             <p className="text-gray-200 mb-8 leading-relaxed text-lg font-light">
