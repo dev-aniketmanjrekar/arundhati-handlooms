@@ -19,8 +19,8 @@ const FilterSection = ({ title, isOpen, onToggle, children }) => (
 const CheckboxItem = ({ label, checked, onChange }) => (
     <label className="flex items-center gap-3 cursor-pointer group py-1.5 select-none">
         <div className={`w-5 h-5 border rounded flex items-center justify-center transition-all duration-200 ${checked
-                ? 'bg-[var(--color-primary)] border-[var(--color-primary)]'
-                : 'border-gray-300 bg-white group-hover:border-[var(--color-primary)]'
+            ? 'bg-[var(--color-primary)] border-[var(--color-primary)]'
+            : 'border-gray-300 bg-white group-hover:border-[var(--color-primary)]'
             }`}>
             {checked && <Check size={12} className="text-white" strokeWidth={3} />}
         </div>
@@ -102,12 +102,12 @@ const FilterSidebar = ({ filters, setFilters, categories, sizes, fabrics, isOpen
 
             <div className={`
                 fixed inset-y-0 left-0 z-40 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out
-                md:relative md:transform-none md:w-72 md:shadow-none md:block md:bg-transparent md:border-r md:border-gray-100 md:pr-8
+                md:relative md:transform-none md:w-72 md:block md:bg-white md:rounded-xl md:shadow-sm md:border md:border-gray-100 md:h-fit md:p-6
                 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
             `}>
                 <div className="h-full flex flex-col bg-white md:bg-transparent">
                     {/* Header */}
-                    <div className="flex justify-between items-center p-6 border-b md:border-none md:px-0 md:pt-0">
+                    <div className="flex justify-between items-center p-6 border-b md:border-none md:p-0 md:mb-6">
                         <h2 className="text-xl font-serif font-bold text-gray-900">Filters</h2>
                         <div className="flex items-center gap-4">
                             <button
@@ -123,7 +123,7 @@ const FilterSidebar = ({ filters, setFilters, categories, sizes, fabrics, isOpen
                     </div>
 
                     {/* Scrollable Content */}
-                    <div className="flex-1 overflow-y-auto p-6 md:px-0 md:py-2 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-6 md:p-0 custom-scrollbar">
                         {/* Categories */}
                         <FilterSection
                             title="Categories"
@@ -183,8 +183,8 @@ const FilterSidebar = ({ filters, setFilters, categories, sizes, fabrics, isOpen
                                     <button
                                         onClick={() => setFilters(prev => ({ ...prev, size: '' }))}
                                         className={`py-2 text-sm border rounded hover:border-[var(--color-primary)] transition-colors ${filters.size === ''
-                                                ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
-                                                : 'bg-white text-gray-600 border-gray-200'
+                                            ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                                            : 'bg-white text-gray-600 border-gray-200'
                                             }`}
                                     >
                                         All
@@ -194,8 +194,8 @@ const FilterSidebar = ({ filters, setFilters, categories, sizes, fabrics, isOpen
                                             key={size}
                                             onClick={() => handleSizeChange(size)}
                                             className={`py-2 text-sm border rounded hover:border-[var(--color-primary)] transition-colors ${filters.size === size
-                                                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
-                                                    : 'bg-white text-gray-600 border-gray-200'
+                                                ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                                                : 'bg-white text-gray-600 border-gray-200'
                                                 }`}
                                         >
                                             {size}
