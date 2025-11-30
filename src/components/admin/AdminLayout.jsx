@@ -27,8 +27,8 @@ const AdminLayout = ({ children }) => {
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
             <aside className="w-64 bg-white shadow-md flex flex-col">
-                <div className="p-6 border-b">
-                    <h1 className="text-2xl font-serif font-bold text-red-800">Arundhati Admin</h1>
+                <div className="p-6 border-b flex justify-center">
+                    <img src="/src/assets/logo.png" alt="Arundhati Admin" className="h-12 w-auto object-contain" />
                 </div>
                 <nav className="flex-1 p-4 space-y-2">
                     {navItems.map((item) => {

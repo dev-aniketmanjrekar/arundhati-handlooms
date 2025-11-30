@@ -22,8 +22,8 @@ const Navbar = () => {
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
-                    <Link to="/" className="text-2xl font-serif font-bold text-[var(--color-primary)]">
-                        Arundhati Handlooms
+                    <Link to="/" className="flex items-center">
+                        <img src="/src/assets/logo.png" alt="Arundhati Handlooms" className="h-16 w-auto object-contain" />
                     </Link>
 
                     {/* Desktop Menu */}
