@@ -56,6 +56,16 @@ const Navbar = () => {
                             <Search size={20} />
                         </button>
 
+                        {/* Cart Icon */}
+                        <Link to="/cart" className="relative text-gray-600 hover:text-[var(--color-primary)]">
+                            <ShoppingBag size={20} />
+                            {getCartCount() > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-[var(--color-secondary)] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                    {getCartCount()}
+                                </span>
+                            )}
+                        </Link>
+
                         {/* User Dropdown */}
                         {user ? (
                             <div className="relative">
@@ -108,8 +118,10 @@ const Navbar = () => {
                                 <User size={20} />
                             </Link>
                         )}
+                    </div>
 
-                        {/* Cart Icon */}
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden flex items-center gap-4">
                         <Link to="/cart" className="relative text-gray-600 hover:text-[var(--color-primary)]">
                             <ShoppingBag size={20} />
                             {getCartCount() > 0 && (
@@ -118,10 +130,7 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
-                    </div>
 
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center gap-4">
                         {/* Mobile User Dropdown */}
                         {user ? (
                             <div className="relative">
@@ -172,15 +181,6 @@ const Navbar = () => {
                                 <User size={20} />
                             </Link>
                         )}
-
-                        <Link to="/cart" className="relative text-gray-600 hover:text-[var(--color-primary)]">
-                            <ShoppingBag size={20} />
-                            {getCartCount() > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-[var(--color-secondary)] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                    {getCartCount()}
-                                </span>
-                            )}
-                        </Link>
 
                         <button onClick={() => setIsOpen(!isOpen)} className="text-gray-600">
                             {isOpen ? <X size={24} /> : <Menu size={24} />}
