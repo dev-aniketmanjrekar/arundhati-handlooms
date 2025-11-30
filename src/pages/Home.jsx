@@ -213,6 +213,33 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* Dynamic Festival Collection */}
+            {products.some(p => p.festival_tag) && (
+                <section className="py-20 bg-[var(--color-bg)]">
+                    <div className="container mx-auto px-4">
+                        <div className="text-center mb-12">
+                            <span className="text-[var(--color-primary)] font-medium tracking-wider text-sm uppercase">Limited Edition</span>
+                            <h2 className="text-3xl md:text-4xl font-serif font-bold mt-2">
+                                {products.find(p => p.festival_tag)?.festival_tag} Collection
+                            </h2>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {products.filter(p => p.festival_tag).slice(0, 4).map(product => (
+                                <ProductCard key={product.id} product={{
+                                    ...product,
+                                    image: product.image_url,
+                                    isNew: product.is_new,
+                                    isBestSeller: product.is_best_seller
+                                }} />
+                            ))}
+                        </div>
+                        <div className="mt-12 text-center">
+                            <Link to="/shop" className="btn btn-primary">View All Festive Wear</Link>
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* New Arrivals */}
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-4">

@@ -28,6 +28,8 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminInquiries from './pages/admin/AdminInquiries';
 import AdminStockNotifications from './pages/admin/AdminStockNotifications';
 import AdminCoupons from './pages/admin/AdminCoupons';
+import AdminPages from './pages/admin/AdminPages';
+import AdminPageEditor from './pages/admin/AdminPageEditor';
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -67,6 +69,8 @@ function App() {
             <Route path="/admin/inquiries" element={<AdminRoute><AdminInquiries /></AdminRoute>} />
             <Route path="/admin/stock-notifications" element={<AdminRoute><AdminStockNotifications /></AdminRoute>} />
             <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />
+            <Route path="/admin/pages" element={<AdminRoute><AdminPages /></AdminRoute>} />
+            <Route path="/admin/pages/edit/:pageId" element={<AdminRoute><AdminPageEditor /></AdminRoute>} />
 
             {/* Customer Routes - With Navbar/Footer */}
             <Route path="/" element={<CustomerLayout><Home /></CustomerLayout>} />

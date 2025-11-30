@@ -33,7 +33,8 @@ const AdminProducts = () => {
         discount_percent: 20,
         is_new: false,
         is_best_seller: false,
-        stock_quantity: 100
+        stock_quantity: 100,
+        festival_tag: ''
     });
 
     useEffect(() => {
@@ -163,7 +164,8 @@ const AdminProducts = () => {
                 description: existingProduct.description,
                 fabric_type: existingProduct.fabric_type || '',
                 is_new: existingProduct.is_new,
-                is_best_seller: existingProduct.is_best_seller
+                is_best_seller: existingProduct.is_best_seller,
+                festival_tag: existingProduct.festival_tag || ''
             }));
         } else {
             setFormData(prev => ({ ...prev, name: selectedName }));
@@ -278,7 +280,8 @@ const AdminProducts = () => {
             discount_percent: product.discount_percent || 20,
             is_new: product.is_new,
             is_best_seller: product.is_best_seller,
-            stock_quantity: product.stock_quantity
+            stock_quantity: product.stock_quantity,
+            festival_tag: product.festival_tag || ''
         });
         setIsModalOpen(true);
     };
@@ -300,7 +303,8 @@ const AdminProducts = () => {
             discount_percent: 20,
             is_new: false,
             is_best_seller: false,
-            stock_quantity: 100
+            stock_quantity: 100,
+            festival_tag: ''
         });
     };
 
@@ -485,8 +489,8 @@ const AdminProducts = () => {
                                         </td>
                                         <td className="px-4 py-3">
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.stock_quantity === 0 ? 'bg-red-100 text-red-700' :
-                                                    product.stock_quantity < 10 ? 'bg-yellow-100 text-yellow-700' :
-                                                        'bg-green-100 text-green-700'
+                                                product.stock_quantity < 10 ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-green-100 text-green-700'
                                                 }`}>
                                                 {product.stock_quantity === 0 ? 'Out of Stock' :
                                                     product.stock_quantity < 10 ? `Low (${product.stock_quantity})` :
@@ -610,6 +614,24 @@ const AdminProducts = () => {
                                         <option value="Lehenga">Lehenga</option>
                                         <option value="Suit">Suit</option>
                                         <option value="Fabric">Fabric</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Festival / Occasion (Optional)</label>
+                                    <select
+                                        name="festival_tag"
+                                        value={formData.festival_tag}
+                                        onChange={handleInputChange}
+                                        className="w-full border rounded-lg px-3 py-2"
+                                    >
+                                        <option value="">None</option>
+                                        <option value="Diwali">Diwali</option>
+                                        <option value="Wedding">Wedding</option>
+                                        <option value="Pongal">Pongal</option>
+                                        <option value="Navratri">Navratri</option>
+                                        <option value="Eid">Eid</option>
+                                        <option value="Onam">Onam</option>
+                                        <option value="Durga Puja">Durga Puja</option>
                                     </select>
                                 </div>
                                 <div>
