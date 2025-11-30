@@ -32,6 +32,7 @@ const FAQItem = ({ question, answer }) => {
 const Home = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [pageContent, setPageContent] = useState(null);
 
     // Organization Schema
     const organizationSchema = {
@@ -53,18 +54,25 @@ const Home = () => {
     };
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get(`${API_URL}/products`);
-                setProducts(response.data);
+                const [productsRes, pageRes] = await Promise.all([
+                    axios.get(`${API_URL}/products`),
+                    axios.get(`${API_URL}/pages/home`)
+                ]);
+
+                setProducts(productsRes.data);
+                if (pageRes.data && pageRes.data.content) {
+                    setPageContent(pageRes.data.content);
+                }
                 setLoading(false);
             } catch (error) {
-                console.error("Error fetching products:", error);
+                console.error("Error fetching data:", error);
                 setLoading(false);
             }
         };
 
-        fetchProducts();
+        fetchData();
     }, []);
 
     const newArrivals = products.filter(p => p.is_new).slice(0, 4);
@@ -75,9 +83,9 @@ const Home = () => {
     return (
         <div>
             <SEO
-                title="Arundhati Handlooms - Premium Handloom Sarees & Traditional Wear"
-                description="Discover exquisite handloom sarees and traditional wear at Arundhati Handlooms. Authentic craftsmanship, premium fabrics, and timeless designs for every occasion."
-                keywords="handloom sarees, traditional sarees, Indian sarees, handwoven sarees, silk sarees, cotton sarees, ethnic wear, Arundhati Handlooms"
+                title={pageContent?.metaTitle || "Arundhati Handlooms - Premium Handloom Sarees & Traditional Wear"}
+                description={pageContent?.metaDescription || "Discover exquisite handloom sarees and traditional wear at Arundhati Handlooms. Authentic craftsmanship, premium fabrics, and timeless designs for every occasion."}
+                keywords={pageContent?.metaKeywords || "handloom sarees, traditional sarees, Indian sarees, handwoven sarees, silk sarees, cotton sarees, ethnic wear, Arundhati Handlooms"}
                 schema={organizationSchema}
             />
             {/* Hero Section */}
@@ -94,10 +102,10 @@ const Home = () => {
                     <div className="max-w-4xl">
                         <span className="text-[var(--color-secondary)] tracking-[0.2em] uppercase text-sm font-medium mb-4 block animate-fade-in-up">Authentic Handloom</span>
                         <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-tight animate-fade-in-up delay-100">
-                            Weaving Tradition <br /> Into Elegance
+                            {pageContent?.heroTitle || <>Weaving Tradition <br /> Into Elegance</>}
                         </h1>
                         <p className="text-xl text-gray-200 mb-10 font-light max-w-2xl mx-auto animate-fade-in-up delay-200">
-                            Discover the finest collection of authentic handwoven sarees and blouses, crafted with centuries of tradition and love.
+                            {pageContent?.heroSubtitle || "Discover the finest collection of authentic handwoven sarees and blouses, crafted with centuries of tradition and love."}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
                             <Link to="/shop" className="bg-[var(--color-secondary)] text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-[var(--color-primary)] transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2 shadow-lg shadow-yellow-900/20">
@@ -271,15 +279,23 @@ const Home = () => {
             {/* Featured Collection Spotlight */}
             <section className="py-24 relative overflow-hidden">
                 <div className="absolute inset-0">
-                    <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1920&auto=format&fit=crop" alt="Banarasi Collection" className="w-full h-full object-cover" />
+                    <img
+                        src={pageContent?.featuredImage || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1920&auto=format&fit=crop"}
+                        alt={pageContent?.featuredTitle || "Banarasi Collection"}
+                        className="w-full h-full object-cover"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
                 </div>
                 <div className="container mx-auto px-4 relative z-10 flex items-center h-full">
                     <div className="max-w-2xl text-white">
-                        <span className="text-[var(--color-secondary)] font-medium tracking-widest text-sm uppercase mb-4 block">Exclusive Launch</span>
-                        <h2 className="text-5xl md:text-6xl font-serif font-bold mb-6 leading-tight">The Royal <br />Banarasi Edit</h2>
+                        <span className="text-[var(--color-secondary)] font-medium tracking-widest text-sm uppercase mb-4 block">
+                            {pageContent?.featuredSubtitle || "Exclusive Launch"}
+                        </span>
+                        <h2 className="text-5xl md:text-6xl font-serif font-bold mb-6 leading-tight">
+                            {pageContent?.featuredTitle || <>The Royal <br />Banarasi Edit</>}
+                        </h2>
                         <p className="text-xl text-gray-200 mb-10 font-light leading-relaxed">
-                            Experience the grandeur of Varanasi with our handpicked collection of pure Katan Silk Banarasi sarees. Intricate zari work meets timeless elegance.
+                            {pageContent?.featuredDescription || "Experience the grandeur of Varanasi with our handpicked collection of pure Katan Silk Banarasi sarees. Intricate zari work meets timeless elegance."}
                         </p>
                         <Link to="/shop" className="bg-white text-black px-10 py-4 rounded-full font-medium text-lg hover:bg-[var(--color-secondary)] hover:text-white transition-all shadow-xl inline-flex items-center gap-2">
                             Shop The Edit <ArrowRight size={20} />
@@ -306,16 +322,18 @@ const Home = () => {
                         <div className="md:w-1/2 relative">
                             <div className="absolute -inset-4 border-2 border-[var(--color-secondary)] rounded-lg transform translate-x-4 translate-y-4"></div>
                             <img
-                                src="/images/kalamkari-red.png"
+                                src={pageContent?.heritageImage || "/images/kalamkari-red.png"}
                                 alt="Weaving Heritage"
                                 className="rounded-lg shadow-2xl relative z-10 w-full"
                             />
                         </div>
                         <div className="md:w-1/2">
                             <span className="text-[var(--color-secondary)] tracking-widest text-sm font-medium uppercase mb-2 block">Our Heritage</span>
-                            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight">The Art of <br />Timeless Weaving</h2>
+                            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight">
+                                {pageContent?.heritageTitle || <>The Art of <br />Timeless Weaving</>}
+                            </h2>
                             <p className="text-gray-200 mb-8 leading-relaxed text-lg font-light">
-                                Every thread tells a story. Our sarees are not just garments; they are a legacy woven by skilled artisans who have inherited this craft through generations. We bring you the authentic touch of India's rich handloom culture.
+                                {pageContent?.heritageDescription || "Every thread tells a story. Our sarees are not just garments; they are a legacy woven by skilled artisans who have inherited this craft through generations. We bring you the authentic touch of India's rich handloom culture."}
                             </p>
                             <div className="flex gap-8 mb-8">
                                 <div>

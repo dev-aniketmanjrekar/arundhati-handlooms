@@ -810,6 +810,124 @@ app.post('/api/admin/update-bestsellers', isAdmin, async (req, res) => {
     }
 });
 
+// --- CMS Routes ---
+
+// Get page content
+app.get('/api/pages/:slug', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM pages WHERE slug = ?', [req.params.slug]);
+        if (rows.length === 0) return res.status(404).json({ message: 'Page not found' });
+        res.json(rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Update page content (Admin only)
+app.put('/api/pages/:slug', auth, isAdmin, async (req, res) => {
+    const { title, content } = req.body;
+    try {
+        await pool.query(
+            'UPDATE pages SET title = ?, content = ? WHERE slug = ?',
+            [title, JSON.stringify(content), req.params.slug]
+        );
+        res.json({ message: 'Page updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// --- Coupon Routes ---
+
+// Get all coupons (Admin only)
+app.get('/api/admin/coupons', auth, isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM coupons ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Create a new coupon (Admin only)
+app.post('/api/admin/coupons', auth, isAdmin, async (req, res) => {
+    const { code, discount_type, discount_value, min_order_amount, expiry_date, usage_limit, status } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO coupons (code, discount_type, discount_value, min_order_amount, expiry_date, usage_limit, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [code.toUpperCase(), discount_type, discount_value, min_order_amount, expiry_date, usage_limit, status]
+        );
+        res.status(201).json({ message: 'Coupon created successfully' });
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ message: 'Coupon code already exists' });
+        }
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Update a coupon (Admin only)
+app.put('/api/admin/coupons/:id', auth, isAdmin, async (req, res) => {
+    const { code, discount_type, discount_value, min_order_amount, expiry_date, usage_limit, status } = req.body;
+    try {
+        await pool.query(
+            'UPDATE coupons SET code = ?, discount_type = ?, discount_value = ?, min_order_amount = ?, expiry_date = ?, usage_limit = ?, status = ? WHERE id = ?',
+            [code.toUpperCase(), discount_type, discount_value, min_order_amount, expiry_date, usage_limit, status, req.params.id]
+        );
+        res.json({ message: 'Coupon updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Delete a coupon (Admin only)
+app.delete('/api/admin/coupons/:id', auth, isAdmin, async (req, res) => {
+    try {
+        await pool.query('DELETE FROM coupons WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Coupon deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Validate Coupon (Public/Protected)
+app.post('/api/coupons/validate', async (req, res) => {
+    const { code, cartTotal } = req.body;
+    try {
+        const [rows] = await pool.query('SELECT * FROM coupons WHERE code = ? AND status = "active"', [code]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Invalid coupon code' });
+        }
+
+        const coupon = rows[0];
+        const currentDate = new Date();
+
+        if (coupon.expiry_date && new Date(coupon.expiry_date) < currentDate) {
+            return res.status(400).json({ message: 'Coupon has expired' });
+        }
+
+        if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+            return res.status(400).json({ message: 'Coupon usage limit reached' });
+        }
+
+        if (cartTotal < coupon.min_order_amount) {
+            return res.status(400).json({ message: `Minimum order amount of ₹${coupon.min_order_amount} required` });
+        }
+
+        res.json(coupon);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

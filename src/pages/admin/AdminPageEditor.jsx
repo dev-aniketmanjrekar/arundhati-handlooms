@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Save, ArrowLeft, Upload, Image as ImageIcon } from 'lucide-react';
+import axios from 'axios';
+import API_URL from '../../config';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminPageEditor = () => {
     const { pageId } = useParams();
     const navigate = useNavigate();
+    const { token } = useAuth();
     const [loading, setLoading] = useState(false);
 
     // Mock initial data based on pageId
@@ -13,39 +17,54 @@ const AdminPageEditor = () => {
         heroTitle: '',
         heroSubtitle: '',
         heroImage: '',
+        featuredTitle: '',
+        featuredSubtitle: '',
+        featuredDescription: '',
+        featuredImage: '',
+        heritageTitle: '',
+        heritageDescription: '',
+        heritageImage: '',
         aboutText: '',
         metaTitle: '',
-        metaDescription: ''
+        metaDescription: '',
+        metaKeywords: ''
     });
 
     useEffect(() => {
-        // Simulate fetching data
-        const loadData = () => {
-            // In a real app, fetch from API based on pageId
-            const mockData = {
-                home: {
-                    heroTitle: 'Weaving Tradition Into Elegance',
-                    heroSubtitle: 'Discover the finest collection of authentic handwoven sarees and blouses.',
-                    heroImage: 'https://images.unsplash.com/photo-1610030469841-12d7b8445147',
-                    metaTitle: 'Arundhati Handlooms - Home',
-                    metaDescription: 'Premium handloom sarees.'
-                },
-                about: {
-                    heroTitle: 'Our Story',
-                    heroSubtitle: 'A legacy of 50 years in handloom weaving.',
-                    heroImage: 'https://images.unsplash.com/photo-1583391733958-e026b14377f9',
-                    aboutText: 'Arundhati Handlooms started in 1970...',
-                    metaTitle: 'About Us - Arundhati Handlooms',
-                    metaDescription: 'Learn about our heritage.'
+        const fetchPageData = async () => {
+            try {
+                const res = await axios.get(`${API_URL}/pages/${pageId}`);
+                if (res.data && res.data.content) {
+                    // Merge fetched content with default structure to prevent undefined errors
+                    setContent(prev => ({ ...prev, ...res.data.content }));
                 }
-            };
-
-            if (mockData[pageId]) {
-                setContent(mockData[pageId]);
+            } catch (error) {
+                console.error('Error fetching page data:', error);
+                // Fallback to mock data if API fails (or for first time load)
+                const mockData = {
+                    home: {
+                        heroTitle: 'Weaving Tradition Into Elegance',
+                        heroSubtitle: 'Discover the finest collection of authentic handwoven sarees and blouses.',
+                        heroImage: 'https://images.unsplash.com/photo-1610030469841-12d7b8445147',
+                        metaTitle: 'Arundhati Handlooms - Home',
+                        metaDescription: 'Premium handloom sarees.'
+                    },
+                    about: {
+                        heroTitle: 'Our Story',
+                        heroSubtitle: 'A legacy of 50 years in handloom weaving.',
+                        heroImage: 'https://images.unsplash.com/photo-1583391733958-e026b14377f9',
+                        aboutText: 'Arundhati Handlooms started in 1970...',
+                        metaTitle: 'About Us - Arundhati Handlooms',
+                        metaDescription: 'Learn about our heritage.'
+                    }
+                };
+                if (mockData[pageId]) {
+                    setContent(mockData[pageId]);
+                }
             }
         };
 
-        loadData();
+        fetchPageData();
     }, [pageId]);
 
     const handleChange = (e) => {
@@ -53,13 +72,22 @@ const AdminPageEditor = () => {
         setContent(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            await axios.put(`${API_URL}/pages/${pageId}`, {
+                title: `${pageId.charAt(0).toUpperCase() + pageId.slice(1)} Page`, // Simple title generation
+                content: content
+            }, {
+                headers: { 'x-auth-token': token }
+            });
             alert('✅ Content updated successfully!');
-        }, 1000);
+        } catch (error) {
+            console.error('Error saving page content:', error);
+            alert('❌ Failed to update content.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -121,13 +149,137 @@ const AdminPageEditor = () => {
                                     </button>
                                 </div>
                                 {content.heroImage && (
-                                    <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border">
-                                        <img src={content.heroImage} alt="Preview" className="w-full h-full object-cover" />
+                                    <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border bg-gray-50">
+                                        <img
+                                            src={content.heroImage}
+                                            alt="Preview"
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => e.target.style.display = 'none'}
+                                            onLoad={(e) => e.target.style.display = 'block'}
+                                        />
                                     </div>
                                 )}
                             </div>
                         </div>
                     </div>
+
+
+
+                    {/* Featured Collection Section */}
+                    {pageId === 'home' && (
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <ImageIcon size={20} className="text-purple-600" />
+                                Featured Collection
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                    <input
+                                        type="text"
+                                        name="featuredTitle"
+                                        value={content.featuredTitle || ''}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg px-4 py-2"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle (e.g., Exclusive Launch)</label>
+                                    <input
+                                        type="text"
+                                        name="featuredSubtitle"
+                                        value={content.featuredSubtitle || ''}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg px-4 py-2"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea
+                                        name="featuredDescription"
+                                        value={content.featuredDescription || ''}
+                                        onChange={handleChange}
+                                        rows="3"
+                                        className="w-full border rounded-lg px-4 py-2"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                    <input
+                                        type="text"
+                                        name="featuredImage"
+                                        value={content.featuredImage || ''}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg px-4 py-2"
+                                    />
+                                    {content.featuredImage && (
+                                        <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border bg-gray-50">
+                                            <img
+                                                src={content.featuredImage}
+                                                alt="Preview"
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => e.target.style.display = 'none'}
+                                                onLoad={(e) => e.target.style.display = 'block'}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Heritage Section */}
+                    {pageId === 'home' && (
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <ImageIcon size={20} className="text-orange-600" />
+                                Heritage Section
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                    <input
+                                        type="text"
+                                        name="heritageTitle"
+                                        value={content.heritageTitle || ''}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg px-4 py-2"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea
+                                        name="heritageDescription"
+                                        value={content.heritageDescription || ''}
+                                        onChange={handleChange}
+                                        rows="3"
+                                        className="w-full border rounded-lg px-4 py-2"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                    <input
+                                        type="text"
+                                        name="heritageImage"
+                                        value={content.heritageImage || ''}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg px-4 py-2"
+                                    />
+                                    {content.heritageImage && (
+                                        <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border bg-gray-50">
+                                            <img
+                                                src={content.heritageImage}
+                                                alt="Preview"
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => e.target.style.display = 'none'}
+                                                onLoad={(e) => e.target.style.display = 'block'}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {pageId === 'about' && (
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -162,10 +314,21 @@ const AdminPageEditor = () => {
                                 />
                             </div>
                             <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
+                                <textarea
+                                    name="metaKeywords"
+                                    value={content.metaKeywords || ''}
+                                    onChange={handleChange}
+                                    rows="2"
+                                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                                    placeholder="sarees, handloom, silk..."
+                                />
+                            </div>
+                            <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
                                 <textarea
                                     name="metaDescription"
-                                    value={content.metaDescription}
+                                    value={content.metaDescription || ''}
                                     onChange={handleChange}
                                     rows="3"
                                     className="w-full border rounded-lg px-3 py-2 text-sm"
@@ -185,8 +348,8 @@ const AdminPageEditor = () => {
                         </button>
                     </div>
                 </div>
-            </div>
-        </AdminLayout>
+            </div >
+        </AdminLayout >
     );
 };
 
