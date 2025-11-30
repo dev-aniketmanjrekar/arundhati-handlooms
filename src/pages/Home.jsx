@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Truck, Heart, Star, Instagram, Award, Clock } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Truck, Heart, Star, Instagram, Award, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import SEO from '../components/SEO';
 import axios from 'axios';
@@ -8,6 +8,26 @@ import API_URL from '../config';
 
 import heroDesktop from '../assets/hero-desktop.png';
 import heroMobile from '../assets/hero-mobile.png';
+
+const FAQItem = ({ question, answer }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex justify-between items-center p-5 text-left bg-gray-50 hover:bg-gray-100 transition-colors"
+            >
+                <span className="font-medium text-gray-900 text-lg">{question}</span>
+                {isOpen ? <ChevronUp size={20} className="text-gray-500" /> : <ChevronDown size={20} className="text-gray-500" />}
+            </button>
+            <div className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="p-5 text-gray-600 border-t border-gray-100 bg-white">
+                    {answer}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -167,6 +187,32 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* Shop by Occasion */}
+            <section className="py-20 bg-white">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <span className="text-[var(--color-primary)] font-medium tracking-wider text-sm uppercase">Find Your Perfect Look</span>
+                        <h2 className="text-3xl md:text-4xl font-serif font-bold mt-2">Shop by Occasion</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            { title: 'Wedding', image: 'https://images.unsplash.com/photo-1583391733958-e026b14377f9?q=80&w=800&auto=format&fit=crop', desc: 'Bridal & Trousseau' },
+                            { title: 'Festive', image: 'https://images.unsplash.com/photo-1610030469841-12d7b8445147?q=80&w=800&auto=format&fit=crop', desc: 'Celebrations & Parties' },
+                            { title: 'Work Wear', image: 'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?q=80&w=800&auto=format&fit=crop', desc: 'Elegant & Professional' }
+                        ].map((item, index) => (
+                            <Link key={index} to="/shop" className="group relative h-[400px] overflow-hidden rounded-xl shadow-md">
+                                <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex flex-col items-center justify-center text-white p-4 text-center">
+                                    <h3 className="text-3xl font-serif font-bold mb-2">{item.title}</h3>
+                                    <p className="text-gray-200 mb-4 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0 duration-500">{item.desc}</p>
+                                    <span className="border border-white px-6 py-2 rounded-full text-sm font-medium hover:bg-white hover:text-black transition-all">Explore</span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* New Arrivals */}
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-4">
@@ -191,6 +237,26 @@ const Home = () => {
                     </div>
                     <div className="mt-12 text-center md:hidden">
                         <Link to="/shop" className="btn btn-outline">View All Products</Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Featured Collection Spotlight */}
+            <section className="py-24 relative overflow-hidden">
+                <div className="absolute inset-0">
+                    <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1920&auto=format&fit=crop" alt="Banarasi Collection" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
+                </div>
+                <div className="container mx-auto px-4 relative z-10 flex items-center h-full">
+                    <div className="max-w-2xl text-white">
+                        <span className="text-[var(--color-secondary)] font-medium tracking-widest text-sm uppercase mb-4 block">Exclusive Launch</span>
+                        <h2 className="text-5xl md:text-6xl font-serif font-bold mb-6 leading-tight">The Royal <br />Banarasi Edit</h2>
+                        <p className="text-xl text-gray-200 mb-10 font-light leading-relaxed">
+                            Experience the grandeur of Varanasi with our handpicked collection of pure Katan Silk Banarasi sarees. Intricate zari work meets timeless elegance.
+                        </p>
+                        <Link to="/shop" className="bg-white text-black px-10 py-4 rounded-full font-medium text-lg hover:bg-[var(--color-secondary)] hover:text-white transition-all shadow-xl inline-flex items-center gap-2">
+                            Shop The Edit <ArrowRight size={20} />
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -321,6 +387,26 @@ const Home = () => {
                             </div>
                         </div>
                     ))}
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-20 bg-white">
+                <div className="container mx-auto px-4 max-w-4xl">
+                    <div className="text-center mb-12">
+                        <span className="text-[var(--color-primary)] font-medium tracking-wider text-sm">GOT QUESTIONS?</span>
+                        <h2 className="text-3xl md:text-4xl font-serif font-bold mt-2">Frequently Asked Questions</h2>
+                    </div>
+                    <div className="space-y-4">
+                        {[
+                            { q: "Are your products 100% authentic handloom?", a: "Yes, absolutely. We source directly from weavers and every product comes with a Silk Mark or Handloom Mark certification to guarantee authenticity." },
+                            { q: "Do you offer international shipping?", a: "Yes, we ship worldwide! Shipping charges are calculated at checkout based on your location and order weight." },
+                            { q: "What is your return policy?", a: "We offer a hassle-free 7-day return policy for any manufacturing defects. Please refer to our Returns & Exchange page for more details." },
+                            { q: "Can I customize the blouse stitching?", a: "Currently, we provide unstitched blouse pieces with all sarees. We are working on launching a customization service soon!" }
+                        ].map((faq, index) => (
+                            <FAQItem key={index} question={faq.q} answer={faq.a} />
+                        ))}
+                    </div>
                 </div>
             </section>
 
