@@ -11,10 +11,7 @@ const AdminPageEditor = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
-    const fileInputRef = React.useRef(null);
-    const [activeUploadField, setActiveUploadField] = useState(null);
 
     // Mock initial data based on pageId
     const [content, setContent] = useState({
@@ -156,55 +153,11 @@ const AdminPageEditor = () => {
         }
     };
 
-    const handleUploadClick = (fieldName) => {
-        setActiveUploadField(fieldName);
-        fileInputRef.current.click();
-    };
 
-    const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const authToken = token || localStorage.getItem('token');
-        if (!authToken) {
-            alert('❌ You are not logged in. Please log in again.');
-            return;
-        }
-
-        setUploading(true);
-        try {
-            const res = await axios.post(`${API_URL}/upload`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'x-auth-token': authToken
-                }
-            });
-
-            if (res.data.url) {
-                setContent(prev => ({ ...prev, [activeUploadField]: res.data.url }));
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            const msg = error.response?.data?.message || error.message || 'Unknown error';
-            alert(`❌ Failed to upload image: ${msg}`);
-        } finally {
-            setUploading(false);
-            e.target.value = null; // Reset input
-        }
-    };
 
     return (
         <AdminLayout>
-            <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileChange}
-            />
+
             {/* Image Preview Modal */}
             {previewImage && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4" onClick={() => setPreviewImage(null)}>
@@ -272,14 +225,7 @@ const AdminPageEditor = () => {
                                         onChange={handleChange}
                                         className="flex-1 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     />
-                                    <button
-                                        onClick={() => handleUploadClick('heroImage')}
-                                        className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center gap-2"
-                                        disabled={uploading}
-                                    >
-                                        <Upload size={18} />
-                                        {uploading && activeUploadField === 'heroImage' ? '...' : ''}
-                                    </button>
+
                                 </div>
                                 {content.heroImage && (
                                     <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border bg-gray-50 group cursor-pointer" onClick={() => setPreviewImage(content.heroImage)}>
@@ -307,14 +253,7 @@ const AdminPageEditor = () => {
                                         className="flex-1 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Optional - defaults to desktop image if empty"
                                     />
-                                    <button
-                                        onClick={() => handleUploadClick('heroImageMobile')}
-                                        className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center gap-2"
-                                        disabled={uploading}
-                                    >
-                                        <Upload size={18} />
-                                        {uploading && activeUploadField === 'heroImageMobile' ? '...' : ''}
-                                    </button>
+
                                 </div>
                                 {content.heroImageMobile && (
                                     <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border bg-gray-50 group cursor-pointer" onClick={() => setPreviewImage(content.heroImageMobile)}>
@@ -384,14 +323,7 @@ const AdminPageEditor = () => {
                                             onChange={handleChange}
                                             className="flex-1 border rounded-lg px-4 py-2"
                                         />
-                                        <button
-                                            onClick={() => handleUploadClick('featuredImage')}
-                                            className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center gap-2"
-                                            disabled={uploading}
-                                        >
-                                            <Upload size={18} />
-                                            {uploading && activeUploadField === 'featuredImage' ? '...' : ''}
-                                        </button>
+
                                     </div>
                                     {content.featuredImage && (
                                         <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border bg-gray-50 group cursor-pointer" onClick={() => setPreviewImage(content.featuredImage)}>
@@ -456,13 +388,7 @@ const AdminPageEditor = () => {
                                                         onChange={handleChange}
                                                         className="flex-1 border rounded px-3 py-2 text-sm"
                                                     />
-                                                    <button
-                                                        onClick={() => handleUploadClick(`occasion${num}Image`)}
-                                                        className="bg-gray-100 px-3 py-2 rounded hover:bg-gray-200"
-                                                        disabled={uploading}
-                                                    >
-                                                        <Upload size={16} />
-                                                    </button>
+
                                                 </div>
                                                 {content[`occasion${num}Image`] && (
                                                     <div className="mt-2 relative h-24 w-full rounded overflow-hidden border bg-white group cursor-pointer" onClick={() => setPreviewImage(content[`occasion${num}Image`])}>
@@ -524,14 +450,7 @@ const AdminPageEditor = () => {
                                             onChange={handleChange}
                                             className="flex-1 border rounded-lg px-4 py-2"
                                         />
-                                        <button
-                                            onClick={() => handleUploadClick('heritageImage')}
-                                            className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center gap-2"
-                                            disabled={uploading}
-                                        >
-                                            <Upload size={18} />
-                                            {uploading && activeUploadField === 'heritageImage' ? '...' : ''}
-                                        </button>
+
                                     </div>
                                     {content.heritageImage && (
                                         <div className="mt-2 relative h-40 w-full rounded-lg overflow-hidden border bg-gray-50 group cursor-pointer" onClick={() => setPreviewImage(content.heritageImage)}>
