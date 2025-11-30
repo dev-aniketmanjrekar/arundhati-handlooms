@@ -969,10 +969,9 @@ app.post('/api/upload', isAdmin, upload.single('file'), (req, res) => {
             return res.status(400).json({ message: 'No file uploaded' });
         }
         // Return the URL of the uploaded file
-        // User requested default domain: https://arundhatihandlooms.com/
-        const baseUrl = process.env.NODE_ENV === 'production'
-            ? 'https://arundhatihandlooms.com'
-            : `${req.protocol}://${req.get('host')}`;
+        // Return the URL of the uploaded file
+        // Use BASE_URL env var if set, otherwise construct from request
+        const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
 
         const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
         res.json({ url: fileUrl });
