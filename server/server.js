@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import xlsx from 'xlsx';
 import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
@@ -15,7 +16,23 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Configure multer for file uploads
-const upload = multer({ dest: 'uploads/' });
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, 'image-' + uniqueSuffix + ext);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// Ensure uploads directory exists
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
 
 app.use(cors({
     origin: true,
@@ -23,6 +40,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'x-auth-token']
 }));
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 // SKU Generation Function
 function generateSKU(name, color) {
@@ -825,16 +843,32 @@ app.get('/api/pages/:slug', async (req, res) => {
 });
 
 // Update page content (Admin only)
+// Update page content (Admin only) - Upsert logic
 app.put('/api/pages/:slug', auth, isAdmin, async (req, res) => {
     const { title, content } = req.body;
+    const slug = req.params.slug;
+
     try {
-        await pool.query(
-            'UPDATE pages SET title = ?, content = ? WHERE slug = ?',
-            [title, JSON.stringify(content), req.params.slug]
-        );
-        res.json({ message: 'Page updated successfully' });
+        // Check if page exists
+        const [existing] = await pool.query('SELECT id FROM pages WHERE slug = ?', [slug]);
+
+        if (existing.length > 0) {
+            // Update
+            await pool.query(
+                'UPDATE pages SET title = ?, content = ? WHERE slug = ?',
+                [title, JSON.stringify(content), slug]
+            );
+            res.json({ message: 'Page updated successfully' });
+        } else {
+            // Insert (Create new page)
+            await pool.query(
+                'INSERT INTO pages (slug, title, content) VALUES (?, ?, ?)',
+                [slug, title, JSON.stringify(content)]
+            );
+            res.status(201).json({ message: 'Page created and saved successfully' });
+        }
     } catch (error) {
-        console.error(error);
+        console.error('Error saving page:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -925,6 +959,26 @@ app.post('/api/coupons/validate', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Generic File Upload Endpoint
+app.post('/api/upload', isAdmin, upload.single('file'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        // Return the URL of the uploaded file
+        // User requested default domain: https://arundhatihandlooms.com/
+        const baseUrl = process.env.NODE_ENV === 'production'
+            ? 'https://arundhatihandlooms.com'
+            : `${req.protocol}://${req.get('host')}`;
+
+        const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+        res.json({ url: fileUrl });
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).json({ message: 'Server error during upload' });
     }
 });
 

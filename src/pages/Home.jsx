@@ -63,7 +63,15 @@ const Home = () => {
 
                 setProducts(productsRes.data);
                 if (pageRes.data && pageRes.data.content) {
-                    setPageContent(pageRes.data.content);
+                    let content = pageRes.data.content;
+                    if (typeof content === 'string') {
+                        try {
+                            content = JSON.parse(content);
+                        } catch (e) {
+                            console.error('Error parsing JSON content:', e);
+                        }
+                    }
+                    setPageContent(content);
                 }
                 setLoading(false);
             } catch (error) {
@@ -204,9 +212,21 @@ const Home = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { title: 'Wedding', image: 'https://images.unsplash.com/photo-1583391733958-e026b14377f9?q=80&w=800&auto=format&fit=crop', desc: 'Bridal & Trousseau' },
-                            { title: 'Festive', image: 'https://images.unsplash.com/photo-1610030469841-12d7b8445147?q=80&w=800&auto=format&fit=crop', desc: 'Celebrations & Parties' },
-                            { title: 'Work Wear', image: 'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?q=80&w=800&auto=format&fit=crop', desc: 'Elegant & Professional' }
+                            {
+                                title: pageContent?.occasion1Title || 'Wedding',
+                                image: pageContent?.occasion1Image || 'https://images.unsplash.com/photo-1583391733958-e026b14377f9?q=80&w=800&auto=format&fit=crop',
+                                desc: pageContent?.occasion1Desc || 'Bridal & Trousseau'
+                            },
+                            {
+                                title: pageContent?.occasion2Title || 'Festive',
+                                image: pageContent?.occasion2Image || 'https://images.unsplash.com/photo-1610030469841-12d7b8445147?q=80&w=800&auto=format&fit=crop',
+                                desc: pageContent?.occasion2Desc || 'Celebrations & Parties'
+                            },
+                            {
+                                title: pageContent?.occasion3Title || 'Work Wear',
+                                image: pageContent?.occasion3Image || 'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?q=80&w=800&auto=format&fit=crop',
+                                desc: pageContent?.occasion3Desc || 'Elegant & Professional'
+                            }
                         ].map((item, index) => (
                             <Link key={index} to="/shop" className="group relative h-[400px] overflow-hidden rounded-xl shadow-md">
                                 <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -271,26 +291,6 @@ const Home = () => {
                         ))}
                     </div>
                     <div className="mt-12 text-center md:hidden">
-                        <Link to="/shop" className="btn btn-outline">View All Products</Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* Featured Collection Spotlight */}
-            <section className="py-24 relative overflow-hidden">
-                <div className="absolute inset-0">
-                    <img
-                        src={pageContent?.featuredImage || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1920&auto=format&fit=crop"}
-                        alt={pageContent?.featuredTitle || "Banarasi Collection"}
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
-                </div>
-                <div className="container mx-auto px-4 relative z-10 flex items-center h-full">
-                    <div className="max-w-2xl text-white">
-                        <span className="text-[var(--color-secondary)] font-medium tracking-widest text-sm uppercase mb-4 block">
-                            {pageContent?.featuredSubtitle || "Exclusive Launch"}
-                        </span>
                         <h2 className="text-5xl md:text-6xl font-serif font-bold mb-6 leading-tight">
                             {pageContent?.featuredTitle || <>The Royal <br />Banarasi Edit</>}
                         </h2>
