@@ -9,6 +9,7 @@ import multer from 'multer';
 import xlsx from 'xlsx';
 import fs from 'fs';
 import path from 'path';
+import { OAuth2Client } from 'google-auth-library';
 
 dotenv.config();
 
@@ -162,6 +163,68 @@ app.post('/api/auth/login', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Google Login
+app.post('/api/auth/google', async (req, res) => {
+    const { token } = req.body;
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const { name, email, picture } = ticket.getPayload();
+
+        // Check if user exists
+        const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+
+        let user;
+        let isNewUser = false;
+
+        if (users.length === 0) {
+            // Create new user
+            // Generate a random password since they are using Google
+            const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+            const [result] = await pool.query(
+                'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+                [name, email, hashedPassword, 'customer']
+            );
+
+            user = {
+                id: result.insertId,
+                name,
+                email,
+                role: 'customer'
+            };
+            isNewUser = true;
+        } else {
+            user = users[0];
+        }
+
+        const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.json({
+            token: jwtToken,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                pincode: user.pincode,
+                role: user.role
+            },
+            isNewUser
+        });
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+        res.status(401).json({ message: 'Google authentication failed' });
     }
 });
 

@@ -80,6 +80,20 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const googleLogin = async (credential) => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/google`, { token: credential });
+            const { token, user, isNewUser } = response.data;
+
+            localStorage.setItem('token', token);
+            setToken(token);
+            setUser(user);
+            return { success: true, user, isNewUser };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Google login failed' };
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('token');
         setToken(null);
@@ -93,6 +107,7 @@ export const AuthProvider = ({ children }) => {
             loading,
             login,
             register,
+            googleLogin,
             logout,
             isAuthenticated: !!user
         }}>

@@ -97,7 +97,7 @@ const Home = () => {
                 schema={organizationSchema}
             />
             {/* Hero Section */}
-            <div className="relative h-[85vh] bg-[var(--color-primary)] overflow-hidden">
+            <div className="relative h-[85vh] bg-gray-900 overflow-hidden">
                 <picture>
                     <source media="(min-width: 768px)" srcSet={heroDesktop} />
                     <img
