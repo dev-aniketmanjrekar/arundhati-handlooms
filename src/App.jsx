@@ -16,6 +16,7 @@ import About from './pages/About';
 import ShippingPolicy from './pages/ShippingPolicy';
 import Returns from './pages/Returns';
 import Contact from './pages/Contact';
+import CompleteProfile from './pages/CompleteProfile';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
@@ -79,6 +80,7 @@ function App() {
             <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
             <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
             <Route path="/register" element={<CustomerLayout><Register /></CustomerLayout>} />
+            <Route path="/complete-profile" element={<CustomerLayout><CompleteProfile /></CustomerLayout>} />
             <Route path="/profile" element={<CustomerLayout><Profile /></CustomerLayout>} />
             <Route path="/my-orders" element={<CustomerLayout><MyOrders /></CustomerLayout>} />
             <Route path="/about" element={<CustomerLayout><About /></CustomerLayout>} />

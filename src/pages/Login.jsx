@@ -84,6 +84,8 @@ const Login = () => {
                                 if (result.success) {
                                     if (result.user.role === 'admin') {
                                         navigate('/admin');
+                                    } else if (!result.user.phone || !result.user.pincode) {
+                                        navigate('/complete-profile');
                                     } else {
                                         navigate('/');
                                     }
